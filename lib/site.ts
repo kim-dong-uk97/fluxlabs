@@ -9,8 +9,10 @@ export const SITE = {
   name: "플럭스랩스 주식회사",
   nameEn: "FLUX LABS Co., Ltd.",
   shortName: "플럭스랩스",
-  url: "https://fluxlabs.co.kr",
-  domain: "fluxlabs.co.kr",
+  // 대표 주소는 www — apex(fluxlabs.co.kr)는 여기로 리다이렉트된다.
+  // canonical·sitemap·OG·JSON-LD 가 모두 이 값을 쓰므로 둘이 어긋나면 안 된다.
+  url: "https://www.fluxlabs.co.kr",
+  domain: "www.fluxlabs.co.kr",
 
   // 기획서 2.2 — A안을 메인 태그라인, B안을 서브 카피로 병기
   tagline: "사람이 적응하는 기술에서, 사람을 이해하는 기술로",
