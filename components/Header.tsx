@@ -12,7 +12,7 @@ import { NAV } from "@/lib/site";
  *  - 상단 고정. 스크롤 100px 이상 시 배경 불투명 + 높이 축소 (6장)
  *  - 사업영역 드롭다운에 4개 하위 항목 직접 노출 (3.1)
  *  - 문의하기는 버튼 스타일로 시각적 우선순위 부여 (3.1)
- *  - KOR/ENG 토글은 Phase 2. 마크업만 심고 비활성 처리 (3.1)
+ *  - KOR/ENG 토글은 번역이 있는 라우트(현재 홈만)에서만 활성화 (3.1)
  *  - 로고 크기: PC 160/140px · 태블릿 140px · 모바일 120px (8.3)
  *
  * 로고 색 전환 (8.3 개발 유의):
@@ -24,7 +24,37 @@ const SCROLL_THRESHOLD = 100;
 
 /** 페이지 최상단이 Navy 배경인 라우트 — 이 경우 GNB 가 투명하게 시작한다 */
 function hasDarkHero(pathname: string): boolean {
-  return pathname === "/" || pathname.startsWith("/business");
+  return (
+    pathname === "/" ||
+    pathname === "/en" ||
+    pathname === "/about" ||
+    pathname === "/en/about" ||
+    pathname.startsWith("/business") ||
+    pathname.startsWith("/en/business")
+  );
+}
+
+/**
+ * 영문 번역이 있는 라우트 짝 — 한국어 경로 → 영어 경로.
+ * 여기 없는 경로에서는 KOR/ENG 토글이 비활성 상태로 남는다.
+ */
+function translationPair(pathname: string): { ko: string; en: string } | null {
+  if (pathname === "/" || pathname === "/en") {
+    return { ko: "/", en: "/en" };
+  }
+  if (pathname === "/about" || pathname === "/en/about") {
+    return { ko: "/about", en: "/en/about" };
+  }
+  // 사업영역 상세 — /business/{slug} ↔ /en/business/{slug}
+  const koDetail = pathname.match(/^\/business\/([^/]+)$/);
+  if (koDetail) {
+    return { ko: pathname, en: `/en/business/${koDetail[1]}` };
+  }
+  const enDetail = pathname.match(/^\/en\/business\/([^/]+)$/);
+  if (enDetail) {
+    return { ko: `/business/${enDetail[1]}`, en: pathname };
+  }
+  return null;
 }
 
 export function Header() {
@@ -35,6 +65,10 @@ export function Header() {
   const darkHero = hasDarkHero(pathname);
   // 투명 상태: 다크 히어로 페이지의 최상단에서만
   const transparent = darkHero && !scrolled;
+
+  // 영문 번역이 있는 라우트 — 홈과 사업영역(목록·상세)
+  const translation = translationPair(pathname);
+  const isEnglish = pathname.startsWith("/en");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > SCROLL_THRESHOLD);
@@ -78,90 +112,119 @@ export function Header() {
       </a>
 
       <header
-        className={`on-navy fixed inset-x-0 top-0 z-50 transition-[background-color,height,box-shadow] duration-300 ${
-          transparent
-            ? "h-20 bg-transparent"
-            : "h-16 bg-ink-950/90 shadow-[0_1px_0_0_rgba(255,255,255,0.08)] backdrop-blur-sm"
+        className={`on-navy fixed inset-x-0 top-0 z-50 bg-transparent transition-[height] duration-300 ${
+          transparent ? "h-20" : "h-16"
         }`}
       >
-        <div className="mx-auto flex h-full max-w-[1600px] items-center justify-between px-5 md:px-10 lg:px-20">
-          <Link
-            href="/"
-            aria-label="플럭스랩스 홈"
-            // 로고를 링크로 쓸 때 밑줄이 상속되지 않도록 (8.6 추가 금지 사항)
-            className="no-underline"
-          >
-            <Logo
-              variant="primary"
-              tone="white"
-              width={160}
-              decorative
-              className={
-                transparent
-                  ? "w-[120px] md:w-[140px] lg:w-[160px]"
-                  : "w-[120px] md:w-[140px]"
-              }
-            />
-          </Link>
+        <div className="mx-auto flex h-full max-w-[1600px] items-center px-5 md:px-10 lg:px-20">
+          <div className="flex flex-1 items-center">
+            <Link
+              href="/"
+              aria-label="플럭스랩스 홈"
+              // 로고를 링크로 쓸 때 밑줄이 상속되지 않도록 (8.6 추가 금지 사항)
+              className="no-underline"
+            >
+              <Logo
+                variant="primary"
+                tone="white"
+                width={160}
+                decorative
+                className={
+                  transparent
+                    ? "w-[120px] md:w-[140px] lg:w-[160px]"
+                    : "w-[120px] md:w-[140px]"
+                }
+              />
+            </Link>
+          </div>
 
-          {/* ---- PC 내비게이션 ---- */}
+          {/* ---- PC 내비게이션 (가운데 정렬, 하나의 투명 칩으로 묶는다) ---- */}
+          {/*
+            칩 안쪽 여백을 상하좌우 2px(p-0.5)로 통일한다.
+            항목의 hover 배경이 칩 테두리와 같은 중심의 라운드로 딱 맞게
+            들어앉도록 항목 반경은 14px(= 칩 16px − 여백 2px)로 맞춘다.
+          */}
           <nav
-            className="hidden items-center gap-1 lg:flex"
+            className="hidden items-center gap-0.5 rounded-2xl border border-white/15 bg-white/5 p-0.5 lg:flex"
             aria-label="주요 메뉴"
           >
             {NAV.map((item) =>
               "children" in item ? (
-                <DesktopDropdown key={item.href} item={item} />
+                <DesktopDropdown key={item.label} item={item} />
               ) : (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-md px-4 py-2 text-[0.95rem] font-medium text-white transition-colors hover:bg-white/10"
+                  className="rounded-[14px] px-4 py-1.5 text-[0.95rem] font-medium text-white transition-colors hover:bg-white/10"
                 >
                   {item.label}
                 </Link>
               ),
             )}
+          </nav>
 
-            <span className="mx-3 h-4 w-px bg-white/25" aria-hidden="true" />
-
+          <div className="hidden flex-1 items-center justify-end lg:flex">
             <Link
               href="/contact"
-              className="inline-flex h-10 origin-center scale-[0.85] items-center gap-1.5 rounded-md bg-white px-5 text-[0.95rem] font-semibold text-navy-900 transition-colors hover:bg-navy-100"
+              className="inline-flex h-10 origin-center scale-[0.85] items-center gap-1.5 rounded-2xl bg-white px-5 text-[0.95rem] font-semibold text-navy-900 transition-colors hover:bg-navy-100"
             >
               문의하기
               <span aria-hidden="true">▸</span>
             </Link>
 
             {/*
-              KOR/ENG 토글 — Phase 2 (기획서 3.1)
-              오픈 시점에는 마크업만 심고 비활성 처리한다.
-              disabled 버튼이라 키보드 포커스도 받지 않는다.
+              KOR/ENG 토글 — 기획서 3.1
+              번역이 있는 라우트(홈·사업영역)에서는 같은 페이지의 다른 언어판으로
+              이동하고, 나머지 페이지에서는 비활성 상태로 남겨둔다.
             */}
-            <div className="ml-2 flex items-center text-[0.8rem] font-medium">
-              <button
-                type="button"
-                disabled
-                aria-disabled="true"
-                title="한국어"
-                className="px-1.5 text-white"
-              >
-                KOR
-              </button>
+            <div className="ml-2 flex items-center gap-1 rounded-full border border-white/15 px-3 py-1.5 text-[0.8rem] font-medium">
+              {translation ? (
+                <Link
+                  href={translation.ko}
+                  aria-current={!isEnglish ? "page" : undefined}
+                  className={`px-1 transition-colors ${
+                    isEnglish ? "text-white/50 hover:text-white" : "text-white"
+                  }`}
+                >
+                  KOR
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  aria-disabled="true"
+                  title="한국어"
+                  className="px-1 text-white"
+                >
+                  KOR
+                </button>
+              )}
               <span className="text-white/40" aria-hidden="true">
                 /
               </span>
-              <button
-                type="button"
-                disabled
-                aria-disabled="true"
-                title="영문 페이지는 준비 중입니다"
-                className="px-1.5 text-white/50"
-              >
-                ENG
-              </button>
+              {translation ? (
+                <Link
+                  href={translation.en}
+                  aria-current={isEnglish ? "page" : undefined}
+                  className={`px-1 transition-colors ${
+                    isEnglish ? "text-white" : "text-white/50 hover:text-white"
+                  }`}
+                >
+                  ENG
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  aria-disabled="true"
+                  title="영문 페이지는 준비 중입니다"
+                  className="px-1 text-white/50"
+                >
+                  ENG
+                </button>
+              )}
             </div>
-          </nav>
+          </div>
 
           {/* ---- 모바일 햄버거 ---- */}
           <button
@@ -206,17 +269,28 @@ function DesktopDropdown({
         }
       }}
     >
-      <Link
-        href={item.href}
+      {/*
+        목록 페이지가 없으므로 링크가 아니라 펼치기 트리거다.
+        이동은 하위 4개 분야에서만 일어난다.
+      */}
+      <button
+        type="button"
         aria-expanded={open}
+        aria-haspopup="true"
         onFocus={() => setOpen(true)}
-        className="inline-flex items-center gap-1 rounded-md px-4 py-2 text-[0.95rem] font-medium text-white transition-colors hover:bg-white/10"
+        // 마우스가 이미 올라가 open 이 true 인 상태에서 토글하면 클릭이
+        // 목록을 닫아버린다. 클릭은 언제나 여는 쪽으로만 동작시킨다.
+        onClick={() => setOpen(true)}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") setOpen(false);
+        }}
+        className="inline-flex items-center gap-1 rounded-[14px] px-4 py-1.5 text-[0.95rem] font-medium text-white transition-colors hover:bg-white/10"
       >
         {item.label}
         <span aria-hidden="true" className="text-[0.7em]">
           ▾
         </span>
-      </Link>
+      </button>
 
       {open && (
         <div className="absolute top-full left-0 pt-2">
@@ -260,7 +334,7 @@ function MobileMenu({
           <ul className="divide-y divide-white/10">
             {NAV.map((item) =>
               "children" in item ? (
-                <li key={item.href}>
+                <li key={item.label}>
                   {/* 사업영역 아코디언 (기획서 6장) */}
                   <button
                     type="button"

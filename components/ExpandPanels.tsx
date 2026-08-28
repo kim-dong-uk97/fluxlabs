@@ -59,7 +59,7 @@ export function ExpandPanels({ items }: Props) {
             <div
               aria-hidden="true"
               className={`absolute inset-0 transition-all duration-500 ${
-                isActive ? "bg-ink-950/25" : "bg-ink-950/70"
+                isActive ? "bg-ink-950/50" : "bg-ink-950/70"
               }`}
             />
 
@@ -67,7 +67,7 @@ export function ExpandPanels({ items }: Props) {
               <span className="tnum inline-flex items-center justify-center rounded-full border border-white/50 px-3 py-1 text-xs font-semibold text-white">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <span className="mt-4 text-sm leading-snug font-bold tracking-wide text-white md:text-base">
+              <span className="mt-4 max-w-full overflow-hidden text-sm leading-snug font-bold tracking-wide text-ellipsis whitespace-nowrap text-white md:text-base">
                 {item.title}
               </span>
               {isActive && item.description && item.description.length > 0 && (
@@ -88,7 +88,7 @@ export function ExpandPanels({ items }: Props) {
 
         const style = { flexGrow: isActive ? 4 : 1, flexBasis: 0 };
         const className =
-          "group relative min-w-0 shrink-0 overflow-hidden transition-[flex-grow] duration-500 ease-[var(--ease-out-soft)]";
+          "group relative min-w-0 shrink-0 overflow-hidden transition-[flex-grow] duration-150 ease-out";
 
         if (item.href) {
           return (

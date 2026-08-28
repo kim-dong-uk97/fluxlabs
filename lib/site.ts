@@ -51,12 +51,16 @@ export const SITE = {
  * 의도적으로 이 파일에 포함하지 않는다. — 기획서 3.2 개발 참고
  */
 
-/** GNB 구성 — 기획서 3.1 (오픈 시점) */
+/**
+ * GNB 구성 — 기획서 3.1 (오픈 시점)
+ *
+ * 사업영역은 목록 페이지를 두지 않는다. href 없이 하위 4개 분야만 펼쳐
+ * 각 상세 페이지로 바로 들어가게 한다.
+ */
 export const NAV = [
   { label: "회사소개", href: "/about" },
   {
     label: "사업영역",
-    href: "/business",
     children: [
       { label: "AUI 리테일 운영 플랫폼", href: "/business/nxi" },
       { label: "웨어러블 온디바이스 에이전트", href: "/business/wearable" },
@@ -64,7 +68,7 @@ export const NAV = [
       { label: "AI 어시스턴트 서비스", href: "/business/assistant" },
     ],
   },
-  { label: "관계사", href: "/partners" },
+  // 관계사(/partners)는 GNB 에서 빼고 홈 S5 "관계사 전체 보기"로만 진입한다
   { label: "인재영입", href: "/careers" },
 ] as const;
 

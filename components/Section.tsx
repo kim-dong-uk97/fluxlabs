@@ -26,7 +26,11 @@ type SectionProps = {
    * 배경 톤. 다크 테마 — ink 2단계(white/offwhite)와 navy 2단계로 교차 리듬을
    * 만든다. 순정 블랙(#000)은 쓰지 않는다.
    */
-  tone?: "white" | "offwhite" | "navy" | "navy-deep";
+  /**
+   * "plain" 은 배경을 칠하지 않는다. 바깥에서 배경(사진 등)을 깔고 여러 섹션이
+   * 그 위를 지나가야 할 때 쓴다. 그 외에는 항상 톤 중 하나를 고른다.
+   */
+  tone?: "white" | "offwhite" | "navy" | "navy-deep" | "plain";
   className?: string;
   id?: string;
   /** 상하 여백 크기 */
@@ -39,6 +43,8 @@ const TONE_CLASS: Record<NonNullable<SectionProps["tone"]>, string> = {
   offwhite: "bg-ink-900 text-paper",
   navy: "bg-ink-950 text-white",
   "navy-deep": "bg-ink-950 text-white",
+  // 배경 없음 — 뒤에 깔린 것이 그대로 비친다
+  plain: "text-paper",
 };
 
 const SIZE_CLASS: Record<NonNullable<SectionProps["size"]>, string> = {
@@ -96,6 +102,39 @@ export function SectionHeading({
       {description && (
         <div className={`mt-5 ${descriptionClassName}`}>{description}</div>
       )}
+    </div>
+  );
+}
+
+type PillHeadingProps = {
+  /** 상단 알약형 배지 라벨 */
+  eyebrow: string;
+  description: ReactNode;
+  className?: string;
+  eyebrowClassName?: string;
+  descriptionClassName?: string;
+  /** 배지-헤드라인 연결선 색 (기본: 다크 섹션용 흰색 계열) */
+  lineClassName?: string;
+};
+
+/** 배지 → 짧은 연결선 → 헤드라인, 가운데 정렬 헤딩 */
+export function PillHeading({
+  eyebrow,
+  description,
+  className = "",
+  eyebrowClassName = "border-white/15 bg-white/5 text-white/70",
+  descriptionClassName = "text-[26px] font-medium text-white",
+  lineClassName = "bg-white/15",
+}: PillHeadingProps) {
+  return (
+    <div className={`flex flex-col items-center text-center ${className}`}>
+      <span
+        className={`rounded-full border px-3 py-1 text-xs font-semibold tracking-wide ${eyebrowClassName}`}
+      >
+        {eyebrow}
+      </span>
+      <span aria-hidden="true" className={`mt-2 h-6 w-px ${lineClassName}`} />
+      <div className={`mt-2 ${descriptionClassName}`}>{description}</div>
     </div>
   );
 }

@@ -11,9 +11,18 @@ import { useState } from "react";
 export function CopyButton({
   value,
   label = "주소 복사",
+  copiedLabel = "복사했습니다",
+  failedLabel = "복사에 실패했습니다. 주소를 직접 선택해 주세요.",
+  copiedAnnouncement = "주소를 복사했습니다.",
 }: {
   value: string;
   label?: string;
+  /** 복사 성공 시 버튼 라벨 */
+  copiedLabel?: string;
+  /** 복사 실패 시 안내 문구 */
+  failedLabel?: string;
+  /** 복사 성공 시 스크린리더 안내 */
+  copiedAnnouncement?: string;
 }) {
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
 
@@ -35,19 +44,17 @@ export function CopyButton({
         className="inline-flex h-10 items-center gap-2 rounded-md border border-white/25 px-4 text-sm font-semibold text-white transition-colors hover:border-white hover:bg-white/5"
       >
         <CopyIcon />
-        {state === "copied" ? "복사했습니다" : label}
+        {state === "copied" ? copiedLabel : label}
       </button>
 
       {/* 상태 변화를 스크린리더에도 알린다 */}
       <span role="status" aria-live="polite" className="sr-only">
-        {state === "copied" && "주소를 복사했습니다."}
-        {state === "failed" && "복사에 실패했습니다. 주소를 직접 선택해 주세요."}
+        {state === "copied" && copiedAnnouncement}
+        {state === "failed" && failedLabel}
       </span>
 
       {state === "failed" && (
-        <span className="text-sm text-navy-300">
-          복사에 실패했습니다. 주소를 직접 선택해 주세요.
-        </span>
+        <span className="text-sm text-navy-300">{failedLabel}</span>
       )}
     </>
   );

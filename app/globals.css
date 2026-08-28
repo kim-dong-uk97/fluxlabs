@@ -145,6 +145,107 @@
 }
 
 /* ==========================================================================
+   로고 마퀴 — 홈 S5 관계사 스트립 (components/LogoMarquee.tsx)
+   ========================================================================== */
+.marquee {
+  /* 양끝에서 로고가 잘리지 않고 서서히 사라지도록 */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 6rem,
+    #000 calc(100% - 6rem),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 6rem,
+    #000 calc(100% - 6rem),
+    transparent 100%
+  );
+}
+
+.marquee-track {
+  animation: marquee-scroll var(--marquee-duration, 48s) linear infinite;
+  /* 합성 레이어로 올려 스크롤 중 리페인트를 줄인다 */
+  will-change: transform;
+}
+
+/* 읽고 싶은 로고에 마우스를 올리면 멈춘다 */
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    /* 트랙은 같은 세트 2개. 정확히 절반을 지나면 원본 시작점과 맞물린다 */
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* ==========================================================================
+   하단 문의 CTA — 떠 있는 판 (사업 상세 6번 섹션)
+   ========================================================================== */
+/*
+  어두운 페이지에서 유일하게 밝은 칸. 카드로 띄우지 않고 섹션 하나를 흰색으로
+  꽉 채운다 — 마지막에 한 번 밝아지면서 문의로 시선이 모인다.
+  글자와 버튼은 모두 검정 계열로 뒤집는다.
+*/
+.cta-band {
+  /* 폭은 화면 끝까지 두고 네 모서리만 둥글린다 — 어두운 바탕 위에 놓인
+     흰 판처럼 읽힌다 */
+  border-radius: 2rem;
+  padding: 5rem 0;
+  background: #ffffff;
+  color: #0a0b0f;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .cta-band {
+    border-radius: 2.5rem;
+    padding: 7.5rem 0;
+  }
+}
+
+/* 로고 — 흰 바탕 위에 그대로 올린다 (배지도 테두리도 두지 않는다) */
+.cta-panel__mark {
+  display: block;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0 auto;
+}
+
+.cta-panel__mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 알약 버튼 — 흰 바탕이라 반대로 검정을 채운다 */
+.cta-panel__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.9rem;
+  margin-top: 2.25rem;
+  padding: 0 1.6rem;
+  border-radius: 9999px;
+  background: #0a0b0f;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.cta-panel__action:hover {
+  background: #262933;
+}
+
+/* ==========================================================================
    접근성 — 모션 최소화 설정 존중
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
@@ -163,6 +264,15 @@
   .reveal {
     opacity: 1;
     transform: none;
+  }
+
+  /*
+    전역 규칙만으로는 마퀴가 애니메이션 끝점(-50%)에 멈춰 선다.
+    시작점으로 되돌려 첫 세트가 그대로 보이게 한다.
+  */
+  .marquee-track {
+    animation: none !important;
+    transform: none !important;
   }
 }
 
@@ -183,5 +293,712 @@
   a[href^="http"]::after {
     content: " (" attr(href) ")";
     font-size: 0.85em;
+  }
+}
+
+/* ==========================================================================
+   사업영역 히어로 제목 그라디언트 (lib/business.ts heroGradient)
+   보라 → 파랑 → 민트로 넘어가는 글자색. 배경은 다른 사업과 같은 검정이다.
+   ========================================================================== */
+/*
+  background-clip: text 로 글자 모양만 남긴다. 검정 바탕 위에서 읽혀야 하므로
+  세 스톱 모두 밝은 톤으로 잡고, 중간에 파랑을 한 번 거쳐 보라와 민트가
+  탁한 회색으로 만나지 않게 한다.
+*/
+.hero-title-gradient {
+  background-image: linear-gradient(
+    100deg,
+    #c4a4ff 0%,
+    #7ea6ff 48%,
+    #6ee7d0 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  /* 블록 폭 전체가 아니라 글자 폭 기준으로 그라디언트를 펼친다 */
+  width: fit-content;
+  /*
+    background-clip: text 는 요소 상자 안에서만 칠해진다. text-5xl 의 기본
+    행간(1)으로는 상자가 글자보다 낮아 g·y 같은 내림 획의 색이 잘려 나간다
+    (받침 없는 한글에서는 드러나지 않아 영문에서만 보였다).
+    행간을 조금 키우고 아래를 살짝 밀어 상자를 글자보다 넉넉하게 만든다.
+  */
+  line-height: 1.18;
+  padding-bottom: 0.08em;
+}
+
+/* ==========================================================================
+   역할 분담 / 현재 상태 섹션의 우측 사진 (lib/business.ts status.image)
+   ========================================================================== */
+/*
+  히어로 사진과 같은 방식이다 — 테두리를 두면 어두운 섹션 위에 사진을 오려
+  붙인 것처럼 보이므로, 네 변을 바깥으로 녹여 바탕에 그대로 잇는다.
+  뒤에 옅은 청록 발광을 깔아 사진 속 홀로그램 빛이 섹션으로 번지게 한다.
+*/
+.status-photo {
+  position: relative;
+  /*
+    열 너비를 그대로 채우지 않고 상한을 둔다 — 넓은 화면에서 사진만 커져
+    글보다 무거워지는 것을 막는다. 남는 자리에서는 가운데로 선다.
+  */
+  width: min(100%, 400px);
+  /* 글 아래로 내려오는 좁은 화면에서는 가운데 (아래 미디어쿼리에서 오른쪽으로) */
+  margin: 0 auto;
+  /* 원본 449×462 비율 그대로 — 잘라 낸 그림을 다시 자르지 않는다 */
+  aspect-ratio: 449 / 462;
+}
+
+/* 2단으로 서는 넓은 화면에서는 열 오른쪽 끝에 붙인다 */
+@media (min-width: 1024px) {
+  .status-photo {
+    margin-right: 0;
+  }
+}
+
+.status-photo__glow {
+  position: absolute;
+  inset: -12%;
+  background: radial-gradient(
+    60% 55% at 55% 45%,
+    rgba(56, 170, 235, 0.28),
+    rgba(24, 80, 210, 0.1) 52%,
+    transparent 72%
+  );
+  filter: blur(26px);
+}
+
+.status-photo__img {
+  object-fit: cover;
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      #000 14%,
+      #000 86%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 12%,
+      #000 88%,
+      transparent 100%
+    );
+  mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      #000 14%,
+      #000 86%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 12%,
+      #000 88%,
+      transparent 100%
+    );
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* ==========================================================================
+   네온 히어로 장식 (lib/business.ts heroNeon)
+   두 색(보라 · 민트)이 사진에서 시작해 히어로 바닥 전체로 번진다.
+   색은 제목 그라디언트(.hero-title-gradient)와 같은 계열로 묶는다.
+   ========================================================================== */
+/*
+  히어로 판 전체에 깔리는 넓은 빛. 사진 주변 후광(.hero-neon-halo)만으로는
+  사진 상자 크기에 갇혀 빛이 배경까지 나가지 못한다. 바탕색(검정)은 그대로
+  두고 그 위에 빛만 얹는다 — 왼쪽 문구 자리는 거의 검정으로 남겨 대비를
+  지킨다.
+*/
+.hero-neon {
+  background-image:
+    radial-gradient(
+      46% 40% at 50% 74%,
+      rgba(178, 92, 255, 0.28),
+      transparent 72%
+    ),
+    radial-gradient(
+      40% 34% at 36% 88%,
+      rgba(88, 226, 208, 0.18),
+      transparent 74%
+    );
+}
+
+/* 넓은 화면에서는 사진이 오른쪽에 서므로 빛의 중심도 그쪽으로 옮긴다 */
+@media (min-width: 1280px) {
+  .hero-neon {
+    background-image:
+      radial-gradient(
+        34% 52% at 80% 40%,
+        rgba(178, 92, 255, 0.32),
+        transparent 70%
+      ),
+      radial-gradient(
+        30% 44% at 66% 82%,
+        rgba(88, 226, 208, 0.2),
+        transparent 72%
+      ),
+      radial-gradient(
+        58% 74% at 84% 55%,
+        rgba(72, 46, 152, 0.22),
+        transparent 76%
+      );
+  }
+}
+/*
+  사진 주변 후광. 한 색으로 두르면 그냥 밝아 보이기만 하므로, 민트와 보라를
+  서로 반대쪽에 앉혀 두 색이 사진 좌우에서 각각 번지게 한다. 리본과 같은
+  색이라 히어로 전체가 한 조명 아래 있는 것처럼 읽힌다.
+*/
+.hero-neon-halo {
+  position: absolute;
+  /* 상자 밖으로 크게 나간다 — 여기서 새어 나온 빛이 위 .hero-neon 과 이어진다 */
+  inset: -42%;
+  border-radius: 9999px;
+  background:
+    radial-gradient(
+      44% 44% at 30% 70%,
+      rgba(110, 231, 208, 0.42),
+      transparent 74%
+    ),
+    radial-gradient(
+      44% 44% at 72% 32%,
+      rgba(184, 132, 255, 0.5),
+      transparent 74%
+    );
+  filter: blur(44px);
+  animation: aui-orb-pulse 6s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   AUI 히어로 오브 (components/AuiOrb.tsx)
+   영상을 원형으로 오려 낸 발광 링. 조정은 아래 두 변수로만 한다.
+   ========================================================================== */
+/*
+  히어로 우측 시각물이 놓이는 자리. 오브(영상)와 사진이 공유한다.
+  vh 를 같이 물려 잡는다 — vw 만으로는 넓고 낮은 화면에서 아래가 잘려 나간다.
+*/
+.hero-visual {
+  position: relative;
+  /*
+    오브와 사진이 같은 크기를 쓴다 — 사업별로 시각물 크기가 달라지면 히어로
+    높이와 왼쪽 문구 위치까지 페이지마다 어긋난다. 기준은 사진 원본(1050px)이
+    확대되지 않는 440px 이다.
+  */
+  width: min(66vw, 46vh, 440px);
+  aspect-ratio: 1;
+}
+
+/*
+  네 변이 바깥에서 완전히 투명해지는 사각 페이드.
+   · 앞서 쓰던 122% 짜리 원형 마스크는 상자 변에 닿는 지점이 아직 55% 불투명
+     이라 사진 테두리가 직선으로 드러났다.
+   · 그렇다고 원형(closest-side)으로 바꾸면 오브와 모양은 같아지지만 헬멧
+     좌우와 목 아래가 잘린다. 그래서 가로·세로 페이드를 교집합으로 겹친다.
+  사진 자체 배경이 검정이라, 가장자리만 녹이면 히어로 바탕과 그대로 이어진다.
+*/
+.hero-photo__img {
+  object-fit: cover;
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      #000 13%,
+      #000 87%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 11%,
+      #000 85%,
+      transparent 100%
+    );
+  mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      #000 13%,
+      #000 87%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 11%,
+      #000 85%,
+      transparent 100%
+    );
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.aui-orb {
+  position: relative;
+
+  /*
+    ── 조정 손잡이 ──────────────────────────────────────────────
+    zoom : 영상 속 링이 프레임보다 작아 원 밖 물결이 남아 보이면 올린다.
+           1 = 1280×720 의 가운데 정사각 그대로.
+    edge : 오려 내는 원의 반지름(요소 절반 기준 %). 링 바깥 물결이 아직
+           보이면 줄이고, 링 자체가 잘리면 늘린다. 50% 가 꽉 찬 원.
+  */
+  --aui-orb-zoom: 1;
+  --aui-orb-edge: 47%;
+}
+
+/* 오려 낸 자리에 원 바깥 발광이 같이 사라져서, 뒤에 깔아 되살린다 */
+.aui-orb__halo {
+  position: absolute;
+  inset: -22%;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(56, 140, 255, 0.42),
+    rgba(24, 80, 210, 0.16) 44%,
+    transparent 68%
+  );
+  filter: blur(14px);
+  animation: aui-orb-pulse 6s ease-in-out infinite;
+}
+
+/*
+  원형으로 오려 내는 렌즈. 확대(zoom)는 안쪽 영상에만 걸어야 한다.
+  이 요소에 걸면 마스크 원까지 같이 커져서 잘라 내는 의미가 없어진다.
+  가장자리를 3% 폭으로 흐리게 끊어 잘린 티가 나지 않게 한다.
+*/
+.aui-orb__lens {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 9999px;
+  -webkit-mask-image: radial-gradient(
+    closest-side,
+    #000 var(--aui-orb-edge),
+    transparent calc(var(--aui-orb-edge) + 3%)
+  );
+  mask-image: radial-gradient(
+    closest-side,
+    #000 var(--aui-orb-edge),
+    transparent calc(var(--aui-orb-edge) + 3%)
+  );
+}
+
+/*
+  object-cover — 16:9 영상에서 가운데 정사각만 남는다. 좌우가 잘려 나가면서
+  우하단 생성 워터마크도 이 시점에 함께 사라진다.
+*/
+.aui-orb__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(var(--aui-orb-zoom));
+}
+
+@keyframes aui-orb-pulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   에이전트가 처리하는 것 — 가로 카드 (components/CapabilityCards)
+   왼쪽 원형 배지(아이콘) + 오른쪽 제목·설명. 배지 쪽에서 보랏빛이 번진다.
+   ========================================================================== */
+.cap-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.15rem;
+  padding: 1.6rem 1.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  /* 빛이 배지에서 나와 카드 왼쪽을 물들이는 것처럼 왼쪽 끝에 중심을 둔다 */
+  background:
+    radial-gradient(120% 150% at 0% 50%, rgba(112, 62, 205, 0.22), transparent 58%),
+    #0c0d13;
+  transition:
+    border-color 0.35s ease,
+    transform 0.35s ease;
+}
+
+.cap-row:hover {
+  border-color: rgba(190, 150, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/*
+  발광하는 구 — 왼쪽 위 하이라이트와 가운데에서 바깥으로 어두워지는 두 겹을
+  겹쳐 판이 아니라 구로 읽히게 한다. 바깥 그림자가 카드 바탕과 이어진다.
+*/
+.cap-row__badge {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 9999px;
+  background:
+    radial-gradient(circle at 36% 30%, rgba(219, 190, 255, 0.9), transparent 54%),
+    radial-gradient(circle at 50% 50%, #6d3bd6 0%, #3a1a86 56%, #190d3a 100%);
+  box-shadow:
+    0 0 0 1px rgba(190, 150, 255, 0.24),
+    0 0 24px rgba(140, 90, 240, 0.5);
+}
+
+.cap-row__icon {
+  width: 52%;
+  color: #f4edff;
+  filter: drop-shadow(0 0 5px rgba(214, 184, 255, 0.9));
+}
+
+/* ==========================================================================
+   에이전트가 처리하는 것 — 가운데 정렬 타일 배지 (components/CapabilityTiles)
+   색은 --tint 로 타일마다 주입한다 (컴포넌트에서 인라인 스타일로 넘긴다).
+   ========================================================================== */
+.cap-tile__badge {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin: 0 auto;
+  border-radius: 1.35rem;
+  /* 옅은 판 + 안쪽 테두리 + 바깥 발광 — 세 겹이 같은 색을 쓴다 */
+  background: rgba(var(--tint), 0.12);
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--tint), 0.24),
+    0 0 28px rgba(var(--tint), 0.14);
+  color: rgb(var(--tint));
+}
+
+/* ==========================================================================
+   기술 과제 · 적용 범위 — 카드 상단 그라디언트 판 (components/ChallengeCards)
+   사진 대신 CSS 로 그린다. 하드 스톱 linear-gradient 를 겹쳐 각진 판을 만들고
+   그 뒤에 radial 로 빛을 넣는다. 색은 브랜드 네이비~밝은 블루 계열로 묶는다.
+   ========================================================================== */
+.cap-art {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background-color: #05070f;
+}
+
+/*
+  가운데를 살짝 눌러 아이콘이 뜨게 하고, 아래쪽은 카드 본문과 이어지도록
+  어둡게 마감한다. 아이콘·발광보다 먼저 깔려야 하므로 z-index 0.
+*/
+.cap-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(closest-side, rgba(5, 7, 15, 0.3), transparent 74%),
+    linear-gradient(to bottom, transparent 54%, rgba(10, 11, 15, 0.6) 100%);
+}
+
+/* 아이콘 뒤에서 번지는 빛 */
+.cap-art__glow {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  width: 56%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    rgba(150, 205, 255, 0.6),
+    rgba(60, 140, 255, 0.2) 44%,
+    transparent 70%
+  );
+  filter: blur(14px);
+  animation: cap-glow-pulse 5s ease-in-out infinite;
+}
+
+/*
+  아이콘 자체의 발광. drop-shadow 를 두 겹 겹쳐 가까운 빛과 멀리 번지는 빛을
+  나눈다. box-shadow 와 달리 선 모양 그대로를 따라가므로 획에서 빛이 난다.
+*/
+.cap-art__icon {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: 34%;
+  transform: translate(-50%, -50%);
+  color: #eaf4ff;
+  filter: drop-shadow(0 0 6px rgba(160, 210, 255, 0.9))
+    drop-shadow(0 0 18px rgba(60, 140, 255, 0.75));
+}
+
+/*
+  아이콘 자리에 놓이는 번호 (components/ChallengeCards).
+  drop-shadow 는 채워진 도형에만 먹으므로 글자에는 text-shadow 를 쓴다.
+*/
+.cap-art__num {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: #eaf4ff;
+  text-shadow:
+    0 0 8px rgba(160, 210, 255, 0.9),
+    0 0 26px rgba(60, 140, 255, 0.75);
+  transition: text-shadow 0.45s ease;
+}
+
+/*
+  아이콘이 함께 놓일 때의 번호. 가운데는 아이콘에 내주고 모서리로 물러난다 —
+  순서는 계속 읽히되 아이콘과 밝기를 다투지 않도록 작고 옅게 둔다.
+*/
+.cap-art__num--corner {
+  position: absolute;
+  z-index: 2;
+  top: 1.1rem;
+  left: 1.3rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: rgba(234, 244, 255, 0.62);
+  text-shadow: 0 0 12px rgba(60, 140, 255, 0.5);
+}
+
+.cap-card:hover .cap-art__num {
+  text-shadow:
+    0 0 10px rgba(200, 232, 255, 1),
+    0 0 34px rgba(70, 150, 255, 0.9);
+}
+
+@keyframes cap-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   카드 호버 — 물방울이 일렁이는 느낌
+   border-radius 를 비대칭으로 흔들면 표면장력을 가진 액체처럼 보인다.
+   원(50% 고정)으로 두면 그냥 커졌다 작아지는 공이 된다.
+   ========================================================================== */
+.cap-card {
+  transition:
+    transform 0.5s var(--ease-out-soft),
+    border-color 0.35s ease,
+    box-shadow 0.5s var(--ease-out-soft);
+}
+
+.cap-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(120, 185, 255, 0.35);
+  box-shadow: 0 20px 50px -22px rgba(40, 110, 240, 0.6);
+}
+
+/* 평소엔 투명하게 깔려만 있다가 호버에 떠오른다 */
+.cap-art__ripple {
+  position: absolute;
+  z-index: 1;
+  inset: 8%;
+  opacity: 0;
+  border-radius: 46% 54% 52% 48% / 50% 46% 54% 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(150, 205, 255, 0.4),
+    rgba(60, 140, 255, 0.14) 52%,
+    transparent 76%
+  );
+  filter: blur(10px);
+  transition: opacity 0.45s ease;
+}
+
+.cap-card:hover .cap-art__ripple {
+  opacity: 1;
+  animation: cap-ripple 4.5s ease-in-out infinite;
+}
+
+/* 아이콘 뒤 빛도 같이 부푼다 */
+.cap-card:hover .cap-art__glow {
+  animation-duration: 2.6s;
+}
+
+.cap-art__icon {
+  transition: filter 0.45s ease;
+}
+
+.cap-card:hover .cap-art__icon {
+  filter: drop-shadow(0 0 8px rgba(190, 226, 255, 1))
+    drop-shadow(0 0 26px rgba(70, 150, 255, 0.9));
+}
+
+@keyframes cap-ripple {
+  0%,
+  100% {
+    border-radius: 46% 54% 52% 48% / 50% 46% 54% 50%;
+    transform: translate3d(-2%, 1%, 0) scale(1);
+  }
+  33% {
+    border-radius: 58% 42% 45% 55% / 44% 58% 42% 56%;
+    transform: translate3d(2%, -2%, 0) scale(1.07);
+  }
+  66% {
+    border-radius: 42% 58% 60% 40% / 56% 44% 56% 44%;
+    transform: translate3d(-1%, 2%, 0) scale(0.96);
+  }
+}
+
+/*
+  네 장의 차이는 빛이 어디서 들어오는지 뿐이다. 각진 판 대신 부드럽게 번지는
+  빛만 깔아 아이콘이 주인공으로 남게 한다.
+*/
+.cap-art--1 {
+  background-image:
+    radial-gradient(115% 90% at 24% 20%, rgba(58, 132, 245, 0.36), transparent 62%),
+    radial-gradient(95% 85% at 80% 78%, rgba(24, 74, 190, 0.28), transparent 66%),
+    linear-gradient(160deg, #0d1836 0%, #070b18 56%, #05070f 100%);
+}
+
+.cap-art--2 {
+  background-image:
+    radial-gradient(115% 90% at 78% 22%, rgba(70, 148, 255, 0.34), transparent 62%),
+    radial-gradient(95% 85% at 20% 74%, rgba(26, 80, 200, 0.26), transparent 66%),
+    linear-gradient(200deg, #0c1633 0%, #070b18 56%, #05070f 100%);
+}
+
+.cap-art--3 {
+  background-image:
+    radial-gradient(120% 85% at 50% 14%, rgba(96, 170, 255, 0.32), transparent 64%),
+    radial-gradient(100% 80% at 50% 88%, rgba(22, 68, 178, 0.26), transparent 66%),
+    linear-gradient(180deg, #0c1734 0%, #070b18 58%, #05070f 100%);
+}
+
+.cap-art--4 {
+  background-image:
+    radial-gradient(115% 90% at 18% 76%, rgba(64, 140, 250, 0.34), transparent 62%),
+    radial-gradient(95% 85% at 82% 26%, rgba(28, 84, 205, 0.26), transparent 66%),
+    linear-gradient(20deg, #0c1633 0%, #070b18 56%, #05070f 100%);
+}
+
+/* ==========================================================================
+   기술 과제 섹션 사진 (app/business/[slug]/page.tsx)
+   카드로 옆에 붙이면 붙여 놓은 티가 나고 색이 따로 논다. 섹션 바탕으로 깔되
+   사진 전체가 잘리지 않고 들어가야 한다. 가장자리만 마스크로 녹인다.
+   ========================================================================== */
+/*
+  배경 사진이 깔리는 검은 띠. 높이를 내용에 맡기면 사업마다 달라진다 —
+  AUI 는 두 섹션(기술 과제 · 확장 계획)이, 웨어러블은 한 섹션이 이 층에
+  들어가기 때문이다. 최소 높이를 못 박아 어느 페이지에서나 같은 크기의
+  띠가 되게 한다. 내용이 이보다 길면 자연히 늘어난다.
+*/
+.stage-band {
+  /* 남는 높이를 위아래로 똑같이 나눠 글이 띠 한가운데 선다 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 560px;
+}
+
+@media (min-width: 768px) {
+  .stage-band {
+    min-height: 820px;
+  }
+}
+
+.chal-art {
+  position: absolute;
+  z-index: 0;
+  /*
+    높이를 섹션의 78% 로 잡고 아래로 내려 앉힌다.
+    폭 기준으로 잡으면 섹션이 짧을 때 위아래가 통째로 잘려 나간다. 섹션 자체에 min-height 를 줘서 글은 위에 남고
+    사진이 그 아래를 채운다. 폭 기준으로 잡으면 섹션이 짧을 때 통째로 잘린다.
+  */
+  right: 10%;
+  /*
+    기준은 두 섹션을 묶은 바깥 층이다. 섹션 경계와 무관하게 놓이므로
+    위치(top)와 크기(height)를 서로 간섭 없이 따로 조절할 수 있다.
+    px 고정 — % 로 잡으면 섹션을 줄여 글을 올릴 때 사진까지 같이 작아진다.
+  */
+  top: 20%;
+  height: 560px;
+  aspect-ratio: 1;
+  pointer-events: none;
+
+  /*
+    closest-side — 원의 반지름이 상자 절반과 정확히 같다. 네 변의 한가운데에
+    닿는 지점에서 이미 완전히 투명해지므로 어디에도 잘린 직선이 생기지 않는다.
+    (반지름을 76% 로 두면 변 중앙이 약 79% 불투명한 채로 잘려 선이 보인다)
+    사진과 베일이 같은 마스크를 써야 베일 혼자 네모로 남지 않는다.
+  */
+  --chal-mask: radial-gradient(
+    closest-side,
+    #000 32%,
+    rgba(0, 0, 0, 0.86) 54%,
+    rgba(0, 0, 0, 0.45) 74%,
+    rgba(0, 0, 0, 0.14) 89%,
+    transparent 100%
+  );
+
+}
+
+.chal-art__img,
+.chal-art__veil {
+  -webkit-mask-image: var(--chal-mask);
+  mask-image: var(--chal-mask);
+}
+
+.chal-art__img {
+  opacity: 0.95;
+}
+
+/*
+  확장 계획 자리에서 무대를 쓰는 사업(웨어러블)은 사진을 한 단계 작게 둔다 —
+  이 층에 섹션이 하나뿐이라 같은 크기면 띠에 비해 사진이 무거워 보인다.
+*/
+.chal-art--sm {
+  /* 웨어러블 무대만 한 단계 작게, 한 단계 아래로 */
+  top: 30%;
+  height: 420px;
+}
+
+/* 글이 놓이는 왼쪽만 눌러 대비를 지킨다. 오른쪽은 사진 그대로 드러난다 */
+.chal-art__veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    rgba(10, 11, 15, 0.9) 0%,
+    rgba(10, 11, 15, 0.45) 26%,
+    transparent 56%
+  );
+}
+
+/* 좁은 화면에서는 글 바로 뒤로 오므로 더 옅게 깔린다 */
+@media (max-width: 1023px) {
+  .chal-art {
+    top: 10%;
+    right: -20%;
+    height: 46%;
+  }
+
+  .chal-art__img {
+    opacity: 0.4;
   }
 }

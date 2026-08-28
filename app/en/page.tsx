@@ -8,27 +8,50 @@ import { TechApproachSection } from "@/components/TechApproach";
 import { ImpactIcon } from "@/components/ImpactIcon";
 import { ExpandPanels, type ExpandPanelItem } from "@/components/ExpandPanels";
 import { LogoMarquee } from "@/components/LogoMarquee";
-import { BUSINESSES } from "@/lib/business";
+import { BUSINESSES_EN } from "@/lib/business-en";
+import { TECH_AXES_EN } from "@/lib/tech-en";
 import { SITE } from "@/lib/site";
 
 /**
- * 홈 — 기획서 5.1
- * 스크롤 순서: S1 히어로 → S2 회사 한 줄 정의 → S3 사업영역 4분할
- *            → S4 기술 접근 → S5 관계사 → S6 채용·문의 (좌우 분할)
+ * 홈 영어 버전 — app/page.tsx 의 본문 콘텐츠를 영어로 번역한 버전.
+ * 헤더/푸터 내비게이션은 여러 페이지가 함께 쓰는 공용 컴포넌트라 한국어
+ * 그대로 두지만, TechApproachSection·사업영역 카드(ExpandPanels)는 이
+ * 페이지 전용 영어 데이터(TECH_AXES_EN/BUSINESS_PANELS_EN)를 props 로
+ * 넘겨 렌더링한다 — lib/tech.ts·lib/business.ts 원본(한국어)은 건드리지
+ * 않는다.
  */
 
 export const metadata: Metadata = {
-  // 홈은 layout 의 default title 을 그대로 쓴다
-  alternates: { canonical: "/" },
+  title: `${SITE.shortName} — Technology that understands people`,
+  description:
+    "FLUXLABS redesigns on-site operations across retail, healthcare, and wearables with AI agents.",
+  alternates: {
+    canonical: "/en",
+    languages: { ko: "/", en: "/en" },
+  },
+  openGraph: {
+    locale: "en_US",
+    title: `${SITE.shortName} — Technology that understands people`,
+    description:
+      "FLUXLABS redesigns on-site operations across retail, healthcare, and wearables with AI agents.",
+    url: "/en",
+  },
 };
 
-export default function HomePage() {
+export default function HomePageEn() {
   return (
     <>
       <Hero />
       <CompanyDefinition />
       <BusinessGrid />
-      <TechApproachSection />
+      <TechApproachSection
+        axes={TECH_AXES_EN}
+        eyebrow="Approach"
+        description="What's proven on one site becomes the starting point for the next."
+        descriptionClassName="text-[26px] font-medium leading-[1.4] text-white"
+        detailLabel="Learn more"
+        href="/en#business"
+      />
       <ImpactSection />
       <PartnersSection />
       <CtaBanner />
@@ -44,10 +67,6 @@ function Hero() {
       className="on-navy relative flex min-h-[90vh] items-center overflow-hidden bg-ink-950 text-white md:min-h-screen"
       aria-labelledby="hero-heading"
     >
-      {/*
-        배경 — 기획서 5.1 S1 원안은 실사/스톡 소재 금지였으나, 임시로 배경
-        영상을 얹는다. 배포 전 반드시 웹 최적화된 영상으로 교체할 것.
-      */}
       <video
         aria-hidden="true"
         autoPlay
@@ -62,16 +81,10 @@ function Hero() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_75%_10%,rgba(10,11,15,0.06)_0%,rgba(10,11,15,0.16)_45%,rgba(10,11,15,0.3)_100%)]"
       />
-      {/*
-        텍스트 가독성용 그라디언트 — 패널(박스) 대신 왼쪽에서 오른쪽으로
-        옅어지는 스크림. 텍스트가 있는 왼쪽만 어둡게 눌러주고 오른쪽은
-        영상이 그대로 드러난다.
-      */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink-950/45 via-ink-950/16 to-transparent"
       />
-      {/* 가운데에서 오른쪽으로 살짝 밝게 */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_60%_50%,rgba(255,255,255,0.2)_0%,rgba(255,255,255,0.08)_45%,transparent_75%)]"
@@ -83,41 +96,33 @@ function Hero() {
             id="hero-heading"
             className="text-2xl leading-[1.35] font-bold md:text-4xl lg:text-5xl"
           >
-            {SITE.tagline.split(", ").map((line, index, lines) => (
-              <span key={line}>
-                {line.split("이해하는").map((part, partIndex, parts) => (
-                  <span key={partIndex}>
-                    {part}
-                    {partIndex < parts.length - 1 && (
-                      <span className="bg-gradient-to-r from-[#356CF5] to-[#a78bfa] bg-clip-text text-transparent">
-                        이해하는
-                      </span>
-                    )}
-                  </span>
-                ))}
-                {index < lines.length - 1 && <br />}
-              </span>
-            ))}
+            From technology people adapt to,
+            <br />
+            to technology that{" "}
+            <span className="bg-gradient-to-r from-[#356CF5] to-[#a78bfa] bg-clip-text text-transparent">
+              understands
+            </span>{" "}
+            people
           </h1>
         </Reveal>
 
         <Reveal delay={120}>
           <p className="mx-auto mt-14 max-w-2xl text-lg leading-[1.8] text-navy-100 md:text-xl">
-            플럭스랩스는 리테일·의료·웨어러블
+            FLUXLABS redesigns on-site operations across retail, healthcare,
             <br />
-            현장의 운영 구조를 AI 에이전트로 다시 설계합니다.
+            and wearables with AI agents.
           </p>
         </Reveal>
 
         <Reveal delay={240}>
           <div className="mt-20 flex justify-center">
             <ButtonLink
-              href="/#business"
+              href="/en#business"
               tone="dark"
               variant="primary"
               className="!rounded-full !bg-gradient-to-r !from-[#356CF5] !to-[#a78bfa] !text-white transition-opacity hover:!opacity-90"
             >
-              서비스 알아보기 <Arrow />
+              Explore Services <Arrow />
             </ButtonLink>
           </div>
         </Reveal>
@@ -139,12 +144,6 @@ function CompanyDefinition() {
   return (
     <Section tone="white" size="lg" className="!py-28 md:!py-40">
       <div className="grid gap-14 sm:grid-cols-[1.4fr_1fr] sm:items-center lg:gap-64">
-        {/*
-          사진 2장 — 대각 구도. 섹션을 정확히 반으로 나눈 왼쪽 절반을 꽉
-          채운다. 왼쪽(아케이드)은 위에, 오른쪽(아카이브)은 아래로 내려
-          위·아래로 어긋나게 배치한다. 흑백·저채도를 유지하되 이전보다
-          살짝 밝게. 확대(zoom) 없이 호버 시 살짝만 밝아진다.
-        */}
         <div className="flex w-full gap-10 sm:gap-20">
           <Reveal
             distance={64}
@@ -152,7 +151,7 @@ function CompanyDefinition() {
           >
             <Image
               src="/company/arcade.png"
-              alt="네온 아케이드 화면 앞에 선 사람"
+              alt="A person standing in front of a neon arcade screen"
               fill
               sizes="(min-width: 640px) 45vw, 45vw"
               className="object-cover grayscale brightness-75 transition-[filter] duration-700 ease-[var(--ease-out-soft)] group-hover:brightness-90"
@@ -165,7 +164,7 @@ function CompanyDefinition() {
           >
             <Image
               src="/company/archive.png"
-              alt="정렬된 아카이브 서가"
+              alt="Neatly arranged archive shelves"
               fill
               sizes="(min-width: 640px) 45vw, 45vw"
               className="object-cover grayscale brightness-75 transition-[filter] duration-700 ease-[var(--ease-out-soft)] group-hover:brightness-90"
@@ -174,37 +173,35 @@ function CompanyDefinition() {
         </div>
 
         <div>
-          {/* 헤드라인 3줄 — 굵기를 번갈아 배치해 리듬을 준다. 줄마다 아래에서 올라오며 순차 등장 */}
           <div>
             <Reveal distance={40}>
               <p className="text-base leading-[1.3] font-medium text-[#6C6C6D] md:text-lg">
-                2015년 설립
+                Founded in 2015
               </p>
             </Reveal>
             <Reveal distance={40} delay={100}>
               <p className="text-base leading-[1.3] font-medium text-[#6C6C6D] md:text-lg">
-                시대의 흐름을 따라
+                Following the shift of the times
               </p>
             </Reveal>
             <Reveal distance={40} delay={200}>
               <p className="mt-10 text-2xl leading-[1.3] font-bold md:text-4xl">
-                2026년{" "}
-                <span className="text-[#356CF5]">AI Agent</span> 기업으로
+                Into an <span className="text-[#356CF5]">AI Agent</span>{" "}
+                company by 2026
               </p>
             </Reveal>
           </div>
 
           <Reveal distance={40} delay={300}>
             <p className="mt-14 max-w-lg text-lg leading-[2.1] text-navy-100">
-              플럭스랩스는 금융 IT 영역에서 축적한 시스템 구축 역량
+              FLUXLABS combines system-building expertise from financial IT
               <br />
-              위에 AI 에이전트 기술을 결합해, 실제 매출이 발생하는
+              with AI agent technology to transform how revenue-generating
               <br />
-              현장의 운영 방식을 바꾸는 일을 합니다.
+              sites actually operate.
             </p>
           </Reveal>
 
-          {/* 설립~현재 스탯 — 가로형. FOUNDED 2015 왼쪽, NOW 2026 오른쪽, 세로선으로 구분 */}
           <Reveal distance={40} delay={200}>
             <div className="mt-12 flex items-center gap-6">
               <div>
@@ -236,10 +233,10 @@ function CompanyDefinition() {
 
           <Reveal distance={40} delay={350}>
             <Link
-              href="/about"
+              href="/en/about"
               className="mt-16 inline-flex items-center gap-1.5 font-semibold text-white hover:underline"
             >
-              회사 소개 더 보기 <Arrow />
+              More About Us <Arrow />
             </Link>
           </Reveal>
         </div>
@@ -250,12 +247,12 @@ function CompanyDefinition() {
 
 /* ------------------------------------------- S3 사업영역 4분할 그리드 */
 
-const BUSINESS_PANELS: ExpandPanelItem[] = BUSINESSES.map((business) => ({
+const BUSINESS_PANELS: ExpandPanelItem[] = BUSINESSES_EN.map((business) => ({
   key: business.slug,
   title: business.name,
   description: [...business.problem, ...business.approach],
   tint: business.tint,
-  href: `/business/${business.slug}`,
+  href: `/en/business/${business.slug}`,
   image: business.image,
 }));
 
@@ -265,7 +262,7 @@ function BusinessGrid() {
       <Container>
         <PillHeading
           eyebrow="Business"
-          description="현장의 업무를 에이전트가 대신 수행합니다"
+          description="Agents take over the work on the ground"
           descriptionClassName="text-[26px] font-medium text-white"
         />
       </Container>
@@ -279,25 +276,26 @@ function BusinessGrid() {
   );
 }
 
-/* --------------------------------------------------- S5 관계사 */
-
 /* -------------------------------------------------------- S4-1 IMPACT */
 
 const IMPACT_VALUES = [
   {
     key: "zero-learning" as const,
     title: "Zero Learning Curve",
-    description: "별도의 교육이나 설치 없이 즉시 현장 투입 가능",
+    description:
+      "Deploy on-site instantly — no training or installation required",
   },
   {
     key: "scalability" as const,
     title: "Infinite Scalability",
-    description: "한 지점의 학습 데이터가 전체 지점의 지능으로 즉각 업데이트",
+    description:
+      "Learning from one site instantly upgrades the intelligence of every site",
   },
   {
     key: "human-centric" as const,
     title: "Human-centric",
-    description: "단순 반복 업무는 AI에게, 사람은 더 가치 있는 업무에 집중",
+    description:
+      "Leave repetitive tasks to AI, so people can focus on higher-value work",
   },
 ];
 
@@ -316,11 +314,11 @@ function ImpactSection() {
                   Impact
                 </span>
                 <h2 className="mt-6 text-3xl leading-[1.3] font-bold md:text-4xl lg:text-[42px]">
-                  단순한 자동화를 넘어
+                  Beyond simple automation,
                   <br />
-                  24시간 멈추지 않는
+                  a site partner that never stops,
                   <br />
-                  현장 파트너.
+                  24 hours a day.
                 </h2>
               </div>
             </Reveal>
@@ -346,12 +344,11 @@ function ImpactSection() {
             </div>
           </div>
 
-          {/* 배경과 이어지도록 가장자리를 방사형으로 페이드아웃한다 (박스 경계 없음) */}
           <Reveal delay={120}>
             <div className="relative mx-auto aspect-[4/5] w-full max-w-xl">
               <Image
                 src="/impact/beam.png"
-                alt="중심으로 모여드는 빛줄기"
+                alt="Beams of light converging at the center"
                 fill
                 sizes="(max-width: 1023px) 100vw, 40vw"
                 className="object-contain"
@@ -373,46 +370,28 @@ function ImpactSection() {
 /** 로고 월 — 8개 로고 그리드. 셀이 정사각형이라 로고 크기는 균일하게 맞춘다 */
 const LOGO_WALL = Array.from({ length: 8 }, (_, i) => ({
   src: `/partners/logo-${i + 1}.svg`,
-  alt: `관계사 로고 ${i + 1}`,
+  alt: `Partner logo ${i + 1}`,
   boxClass: "h-14 max-w-[150px]",
 }));
 
 function PartnersSection() {
   return (
     <section className="bg-ink-950 py-8 text-white md:py-10" id="partners">
-      {/* 로고 띠 위에 얹는 작은 라벨 — 헤드라인이 아니라 스트립의 이름표다 */}
       <Reveal>
         <p className="text-center text-base font-semibold tracking-[0.18em] text-white/60 uppercase md:text-lg">
           Partners of the Best
         </p>
       </Reveal>
 
-      {/*
-        ⚠️ 보안 체크리스트 A-1
-        기획서 5.1 S5 는 로고 스트립 마크업을 심고 display:none 처리하라고
-        지시하지만, display:none 은 소스 보기로 전부 노출되고 검색엔진도 읽는다.
-        같은 문서 4.2 의 확정사항("협업 상대사 사명 미표기")과 충돌하므로
-        **마크업 자체를 만들지 않는다.** 공개 동의 확보 후 Partner.logo 에
-        값이 들어오면 그때 렌더링되도록 데이터 구조만 열어 두었다.
-        (lib/business.ts 의 Partner 타입 참조)
-      */}
-
-      {/*
-        로고 마퀴 — 검정 바탕의 얇은 띠 안에서 로고가 끊김 없이 흘러간다.
-        무한 루프·간격·접근성 처리는 components/LogoMarquee.tsx 주석 참고.
-
-        원본 SVG 가 흰색(fill="white")이라 검정 바탕에서는 필터 없이
-        그대로 쓴다. 흰 바탕에 얹을 때만 invert(1) 이 필요했다.
-      */}
       <div className="mt-5">
-        <LogoMarquee logos={LOGO_WALL} label="관계사 로고" />
+        <LogoMarquee logos={LOGO_WALL} label="Partner logos" />
       </div>
     </section>
   );
 }
+
 /* --------------------------------------------- S6 채용 · 문의 (좌우 분할) */
 
-/** 왼쪽(채용)·오른쪽(문의) 배경 사진 — 평소에도 선명하게 보이고, 호버하면 위/아래에서 빛 효과가 번진다 */
 const CTA_CARDS = [
   {
     key: "careers",
@@ -420,21 +399,21 @@ const CTA_CARDS = [
     eyebrow: "Careers",
     title: (
       <>
-        우리가 만드는 변화에
+        If you&apos;re curious about
         <br />
-        관심이 있다면
+        the change we&apos;re making
       </>
     ),
     body: (
       <>
-        아직 풀리지 않은 문제를 새로운 시선으로 바라봅니다.
+        We look at unsolved problems with fresh eyes.
         <br />
-        그 답을 함께 만들어갈 동료를 기다립니다.
+        We&apos;re waiting for a teammate to help build the answer with us.
       </>
     ),
-    cta: "공고보기",
+    cta: "View Openings",
     ctaVariant: "primary" as const,
-    image: { src: "/cta/careers.png", alt: "채용" },
+    image: { src: "/cta/careers.png", alt: "Careers" },
   },
   {
     key: "contact",
@@ -442,21 +421,22 @@ const CTA_CARDS = [
     eyebrow: "Contact",
     title: (
       <>
-        현장의 문제를
+        Tell us about
         <br />
-        들려주세요
+        your on-site challenge
       </>
     ),
     body: (
       <>
-        어떤 업무가 불편한지 말씀해 주세요.
+        Let us know which task is causing friction.
         <br />
-        현장의 상황을 살펴보고, 최적의 해결 방법을 함께 찾아드립니다.
+        We&apos;ll look at your situation and help find the best solution
+        together.
       </>
     ),
-    cta: "문의하기",
+    cta: "Contact Us",
     ctaVariant: "primary" as const,
-    image: { src: "/cta/contact.png", alt: "문의" },
+    image: { src: "/cta/contact.png", alt: "Contact" },
   },
 ] as const;
 
@@ -491,7 +471,6 @@ function CtaBanner() {
                 </p>
               </div>
 
-              {/* 버튼 — 평소에도 카드 하단 가운데에 보이고, 호버하면 살짝 떠오르며 빛난다 */}
               <div className="pointer-events-none absolute inset-x-0 bottom-8 flex justify-center md:bottom-10">
                 <div className="transition-transform duration-300 ease-out group-hover:-translate-y-1">
                   <ButtonLink

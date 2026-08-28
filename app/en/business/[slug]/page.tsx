@@ -11,23 +11,18 @@ import { CapabilityTiles } from "@/components/CapabilityTiles";
 import { ChallengeCards } from "@/components/ChallengeCards";
 import { ButtonLink, Arrow } from "@/components/Button";
 import { CtaPanel } from "@/components/CtaPanel";
-import { BUSINESSES, getBusiness } from "@/lib/business";
+import { BUSINESSES_EN, getBusinessEn } from "@/lib/business-en";
 import { SITE } from "@/lib/site";
 
 /**
- * 사업영역 상세 — 기획서 5.3 하위 페이지 공통 구조
- *  1. 페이지 히어로 (사업명 + 한 줄 정의)
- *  2. 문제 정의
- *  3. 접근 방식
- *  4. 기술 과제  ← 채용 타깃 대상 핵심 블록
- *  5. 현재 상태 / 확장 계획
- *  6. 하단 CTA → /contact?type=... 자동 선택
+ * 사업영역 상세 영문판 — app/business/[slug]/page.tsx 와 같은 구조.
+ * 콘텐츠만 lib/business-en.ts 에서 가져오고, 내부 링크는 /en/... 로 건다.
  */
 
 type Params = { slug: string };
 
 export function generateStaticParams(): Params[] {
-  return BUSINESSES.map((business) => ({ slug: business.slug }));
+  return BUSINESSES_EN.map((business) => ({ slug: business.slug }));
 }
 
 export async function generateMetadata({
@@ -36,29 +31,36 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const business = getBusiness(slug);
+  const business = getBusinessEn(slug);
 
   if (!business) return {};
 
   return {
     title: business.name,
     description: `${business.headline} — ${business.summary}`,
-    alternates: { canonical: `/business/${business.slug}` },
+    alternates: {
+      canonical: `/en/business/${business.slug}`,
+      languages: {
+        ko: `/business/${business.slug}`,
+        en: `/en/business/${business.slug}`,
+      },
+    },
     openGraph: {
+      locale: "en_US",
       title: `${business.name} | ${SITE.shortName}`,
       description: business.headline,
-      url: `/business/${business.slug}`,
+      url: `/en/business/${business.slug}`,
     },
   };
 }
 
-export default async function BusinessDetailPage({
+export default async function BusinessDetailPageEn({
   params,
 }: {
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const business = getBusiness(slug);
+  const business = getBusinessEn(slug);
 
   if (!business) notFound();
 
@@ -71,9 +73,7 @@ export default async function BusinessDetailPage({
   const statusOnStage = Boolean(
     business.status.imageAsStage && business.status.image,
   );
-  const stageImage =
-    business.challenge.image ??
-    (statusOnStage ? business.status.image : undefined);
+  const stageImage = business.challenge.image ?? (statusOnStage ? business.status.image : undefined);
 
   return (
     <>
@@ -185,7 +185,7 @@ export default async function BusinessDetailPage({
         <Section tone="white" size="lg">
           <Reveal>
             <div className="max-w-3xl">
-              <SubHeading>문제 정의</SubHeading>
+              <SubHeading>The problem</SubHeading>
               {business.problem.map((paragraph) => (
                 <p
                   key={paragraph}
@@ -216,7 +216,7 @@ export default async function BusinessDetailPage({
               </Reveal>
               <Reveal delay={90} distance={30}>
                 <div className="mt-4">
-                  <SubHeading>기술 접근</SubHeading>
+                  <SubHeading>Technical approach</SubHeading>
                 </div>
               </Reveal>
             </div>
@@ -289,33 +289,29 @@ export default async function BusinessDetailPage({
                 : "relative pt-28 md:pt-40"
             }
           >
-            <div>
-              <div className="relative z-10 max-w-2xl">
-                <Reveal distance={22}>
-                  <p className="text-sm font-semibold tracking-[0.14em] text-navy-300 uppercase">
-                    Engineering
+          <div>
+            <div className="relative z-10 max-w-2xl">
+              <Reveal distance={22}>
+                <p className="text-sm font-semibold tracking-[0.14em] text-navy-300 uppercase">
+                  Engineering
+                </p>
+              </Reveal>
+              <Reveal delay={90} distance={30}>
+                {/* 본문과 함께 한 단계씩 내렸다 — 둘의 크기 차는 그대로 */}
+                <h2 className="mt-4 text-2xl font-bold md:text-3xl">
+                  {business.challenge.title}
+                </h2>
+              </Reveal>
+
+              {business.challenge.body?.map((paragraph, index) => (
+                <Reveal key={paragraph} delay={200 + index * 120} distance={24}>
+                  <p className="mt-8 text-base leading-[1.85] whitespace-pre-line text-navy-100 md:text-lg">
+                    {paragraph}
                   </p>
                 </Reveal>
-                <Reveal delay={90} distance={30}>
-                  {/* 본문과 함께 한 단계씩 내렸다 — 둘의 크기 차는 그대로 */}
-                  <h2 className="mt-4 text-2xl font-bold md:text-3xl">
-                    {business.challenge.title}
-                  </h2>
-                </Reveal>
-
-                {business.challenge.body?.map((paragraph, index) => (
-                  <Reveal
-                    key={paragraph}
-                    delay={200 + index * 120}
-                    distance={24}
-                  >
-                    <p className="mt-8 text-base leading-[1.85] whitespace-pre-line text-navy-100 md:text-lg">
-                      {paragraph}
-                    </p>
-                  </Reveal>
-                ))}
-              </div>
+              ))}
             </div>
+          </div>
 
             {business.challenge.items && (
               <div className="mt-12">
@@ -411,8 +407,6 @@ export default async function BusinessDetailPage({
               {/*
               외부 서비스 진입 CTA (기획서 4.6)
               URL 미확보 시 비활성 처리한다 (9.2 B항목).
-              disabled 버튼은 키보드 포커스를 받지 않으므로, 왜 비활성인지
-              별도 안내 문구를 함께 노출한다.
             */}
               {business.ctas && (
                 <Reveal delay={80}>
@@ -443,8 +437,8 @@ export default async function BusinessDetailPage({
 
                     {business.ctas.some((cta) => !cta.href) && (
                       <p className="mt-3 text-sm text-navy-500">
-                        채널 주소는 준비 중입니다. 공개되면 이곳에서 바로
-                        연결됩니다.
+                        Channel addresses are being prepared. They will be
+                        linked here once public.
                       </p>
                     )}
                   </div>
@@ -487,10 +481,10 @@ export default async function BusinessDetailPage({
       <section className="cta-band">
         <Container>
           <Reveal distance={26}>
-            <CtaPanel
-              title="AI 에이전트가 필요한 순간을 알려주세요"
-              description="현장의 문제와 상황을 알려주시면, 플럭스랩스가 함께 해결 방법을 찾아보겠습니다."
-              actionLabel="문의하기"
+          <CtaPanel
+            title="Tell us when you need an AI agent"
+            description="Tell us the problem and the situation on site, and FLUXLABS will work out the answer with you."
+            actionLabel="Contact Us"
               href={`/contact?type=${business.slug}`}
             />
           </Reveal>

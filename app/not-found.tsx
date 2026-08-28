@@ -23,7 +23,7 @@ export default function NotFound() {
           홈으로 <Arrow />
         </Link>
         <Link
-          href="/business"
+          href="/#business"
           className="inline-flex items-center gap-1.5 font-semibold text-navy-300 hover:underline"
         >
           사업영역 <Arrow />

@@ -1,66 +1,85 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Container, SectionHeading } from "@/components/Section";
+import { Container, PillHeading } from "@/components/Section";
 import { Chevron } from "@/components/Button";
 import { Reveal } from "@/components/Reveal";
-import { BusinessIcon } from "@/components/BusinessIcon";
-import { TECH_AXES } from "@/lib/tech";
+import { TECH_AXES, type TechAxis } from "@/lib/tech";
+
+type Props = {
+  /** 다른 언어 버전에서 축(카드) 데이터를 통째로 바꿔 끼울 때 쓴다. 기본값: 한국어 TECH_AXES */
+  axes?: TechAxis[];
+  eyebrow?: string;
+  description?: ReactNode;
+  descriptionClassName?: string;
+  /** 카드 우측 상단 호버 라벨 */
+  detailLabel?: string;
+  /** 카드 클릭 시 이동 경로 */
+  href?: string;
+};
 
 /**
  * 기술 접근 섹션 — 홈과 사업영역 페이지에서 공용으로 쓴다.
- * 3칸 정적 카드 그리드: 사진 상단 + 제목 + 설명 + 자세히 보기 버튼.
+ * 4칸 그리드: 사진을 카드 전체에 채우고 하단에 텍스트를 오버레이한다.
+ * 사진·설명이 없는 항목은 라벨만 노출한다.
  */
-export function TechApproachSection() {
+export function TechApproachSection({
+  axes = TECH_AXES,
+  eyebrow = "Approach",
+  description = "한 현장에서 검증된 방식이 다음 현장의 출발점이 됩니다",
+  descriptionClassName = "text-[26px] font-medium leading-[1.4] text-white",
+  detailLabel = "자세히 보기",
+  href = "/#business",
+}: Props) {
   return (
     <section className="on-navy bg-ink-950 py-28 text-white md:py-40">
       <Container>
-        <SectionHeading
-          eyebrow="Approach"
-          eyebrowClassName="text-base font-semibold text-[#356CF5]"
-          description="한 현장에서 검증된 방식이 다음 현장의 출발점이 됩니다"
-          descriptionClassName="text-[26px] font-medium leading-[1.4] text-white"
+        <PillHeading
+          eyebrow={eyebrow}
+          description={description}
+          descriptionClassName={descriptionClassName}
         />
 
-        <div className="mt-14 grid gap-8 sm:grid-cols-3">
-          {TECH_AXES.map((axis, index) => (
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {axes.map((axis, index) => (
             <Reveal key={axis.key} delay={index * 80}>
-              <div className="group flex h-full flex-col">
-                <div className="relative aspect-[4/3] overflow-hidden bg-ink-800">
-                  {axis.image ? (
-                    <div
-                      className={`absolute inset-0 ${axis.imageClassName ?? ""}`}
-                    >
-                      <Image
-                        src={axis.image.src}
-                        alt={axis.image.alt}
-                        fill
-                        sizes="(max-width: 639px) 100vw, (max-width: 1023px) 32vw, 460px"
-                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex h-full items-center justify-center">
-                      <BusinessIcon icon="assistant" className="size-12 text-navy-700" />
-                    </div>
-                  )}
-                </div>
+              <Link
+                href={href}
+                className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden rounded-lg border border-white/15 bg-ink-800"
+              >
+                {axis.image && (
+                  <Image
+                    src={axis.image.src}
+                    alt={axis.image.alt}
+                    fill
+                    sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
+                    className={`object-cover brightness-125 transition-transform duration-500 ease-out group-hover:scale-110 ${axis.imageClassName ?? ""}`}
+                  />
+                )}
 
-                <div className="flex flex-1 flex-col pt-6">
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/40 to-transparent"
+                />
+
+                <span className="absolute top-5 right-5 z-10 inline-flex items-center gap-1 text-[10px] font-semibold text-white opacity-0 transition-opacity duration-300 group-hover:opacity-80">
+                  {detailLabel} <Chevron />
+                </span>
+
+                <div className="relative z-10 p-5">
                   <span className="tnum text-sm font-semibold text-navy-500">
                     0{index + 1}
                   </span>
-                  <h3 className="mt-2 text-lg font-bold">{axis.label}</h3>
-                  <p className="mt-2 flex-1 leading-[1.8] text-navy-300">
-                    {axis.description}
-                  </p>
-                  <Link
-                    href="/business"
-                    className="mt-5 inline-flex items-center justify-center gap-1 self-start rounded-sm border border-[#356CF5] bg-[#356CF5] px-2 py-2 text-[11px] leading-none font-semibold text-white transition-colors hover:bg-[#2857DB]"
-                  >
-                    자세히 보기 <Chevron />
-                  </Link>
+                  <div className="mt-2 border-t border-white/15 pt-2">
+                    <h3 className="text-base font-bold">{axis.label}</h3>
+                    {axis.description && (
+                      <p className="mt-1 line-clamp-2 text-xs leading-[1.6] text-navy-300">
+                        {axis.description}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </Link>
             </Reveal>
           ))}
         </div>

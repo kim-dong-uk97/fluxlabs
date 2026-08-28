@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 /**
@@ -58,11 +59,30 @@ type Props = {
   placeName: string;
   /** 지도를 못 쓸 때 이동시킬 외부 링크 */
   fallbackHref: string;
+  /** 폴백 카드의 문구 (영문판에서 교체한다) */
+  fallbackLabel?: string;
+  /** 지도 로딩 중 문구 */
+  loadingLabel?: string;
+  /** 지도 위 "큰 지도로 보기" 링크 문구 */
+  expandLabel?: string;
+  /**
+   * 지도 영역의 접근성 설명. 서버 컴포넌트에서 넘어오므로 함수가 아니라
+   * 완성된 문자열을 받는다 (함수는 클라이언트 컴포넌트로 전달할 수 없다).
+   */
+  mapAriaLabel?: string;
 };
 
 type Status = "idle" | "loading" | "ready" | "unavailable";
 
-export function KakaoMap({ address, placeName, fallbackHref }: Props) {
+export function KakaoMap({
+  address,
+  placeName,
+  fallbackHref,
+  fallbackLabel = "카카오맵에서 위치 보기",
+  loadingLabel = "지도를 불러오는 중…",
+  expandLabel = "큰 지도로 보기",
+  mapAriaLabel,
+}: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const appKey = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY;
   const [status, setStatus] = useState<Status>(appKey ? "loading" : "unavailable");
@@ -139,13 +159,25 @@ export function KakaoMap({ address, placeName, fallbackHref }: Props) {
         href={fallbackHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="group flex aspect-[4/3] flex-col items-center justify-center rounded-xl border border-white/10 bg-ink-900 transition-colors hover:border-white/25"
+        className="group relative flex aspect-[4/3] flex-col items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-ink-900 transition-colors hover:border-white/25"
       >
-        <MapPinIcon />
-        <span className="mt-4 font-semibold text-white">
-          카카오맵에서 위치 보기
-        </span>
-        <span className="mt-1 text-sm text-navy-300">{placeName}</span>
+        <Image
+          src="/location/map-fallback.png"
+          alt={`${placeName} 위치가 표시된 지도`}
+          fill
+          sizes="(max-width: 1023px) 100vw, 50vw"
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-ink-950/55 transition-colors group-hover:bg-ink-950/45"
+        />
+
+        <div className="relative z-10 flex flex-col items-center">
+          <MapPinIcon />
+          <span className="mt-4 font-semibold text-white">{fallbackLabel}</span>
+          <span className="mt-1 text-sm text-navy-100">{placeName}</span>
+        </div>
       </a>
     );
   }
@@ -157,12 +189,12 @@ export function KakaoMap({ address, placeName, fallbackHref }: Props) {
         className="aspect-[4/3] w-full"
         // 지도는 시각 정보다. 스크린리더에는 주소 텍스트가 이미 제공된다.
         role="img"
-        aria-label={`${placeName} 위치 지도`}
+        aria-label={mapAriaLabel ?? `${placeName} 위치 지도`}
       />
 
       {status === "loading" && (
         <div className="absolute inset-0 flex items-center justify-center bg-ink-900">
-          <span className="text-sm text-navy-300">지도를 불러오는 중…</span>
+          <span className="text-sm text-navy-300">{loadingLabel}</span>
         </div>
       )}
 
@@ -172,7 +204,7 @@ export function KakaoMap({ address, placeName, fallbackHref }: Props) {
         rel="noopener noreferrer"
         className="absolute right-3 bottom-3 rounded-md bg-white/95 px-3 py-2 text-sm font-semibold text-navy-900 shadow-md hover:bg-white"
       >
-        큰 지도로 보기
+        {expandLabel}
       </a>
     </div>
   );

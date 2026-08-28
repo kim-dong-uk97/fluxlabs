@@ -151,6 +151,26 @@ export function Arrow() {
   );
 }
 
+/** 종이비행기 아이콘 — 그라디언트 CTA 버튼 등에서 Arrow 대신 쓴다 */
+export function SendIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="size-4"
+      fill="none"
+    >
+      <path
+        d="M17.5 2.5L9 11M17.5 2.5L12 17.5L9 11M17.5 2.5L2.5 8L9 11"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 /** 얇은 꺾쇠(>) 아이콘 — Arrow(▸)보다 가벼운 느낌이 필요한 곳에 쓴다 */
 export function Chevron() {
   return (

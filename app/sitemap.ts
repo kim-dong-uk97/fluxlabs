@@ -18,8 +18,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }[] = [
     { path: "", priority: 1, changeFrequency: "monthly" },
     { path: "/about", priority: 0.9, changeFrequency: "yearly" },
-    { path: "/business", priority: 0.9, changeFrequency: "monthly" },
-    { path: "/partners", priority: 0.7, changeFrequency: "yearly" },
     { path: "/careers", priority: 0.8, changeFrequency: "monthly" },
     { path: "/contact", priority: 0.8, changeFrequency: "yearly" },
     { path: "/privacy", priority: 0.3, changeFrequency: "yearly" },
