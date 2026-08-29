@@ -224,25 +224,56 @@ function History() {
         lineClassName="opacity-0 h-8"
       />
 
-      <div className="mx-auto mt-16 max-w-6xl overflow-x-auto pb-4">
-        <div className="grid min-w-[900px] grid-cols-5 divide-x divide-white/10 border-x border-white/10">
+      {/* 가운데 가로선을 기준으로 항목이 위·아래로 번갈아 붙는 타임라인. 색은 흰색 하나로 통일. */}
+      <div className="mx-auto mt-24 max-w-6xl overflow-x-auto pb-4">
+        <div className="relative flex min-w-[900px]">
+          {/* 가운데 가로선 — 열의 세로 중앙(=점 위치)과 정확히 맞도록 위·아래 칸 높이를 대칭으로 둔다 */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-white/15"
+          />
+
           {HISTORY.map((item, idx) => {
+            const isAbove = idx % 2 === 0;
+
             return (
-              <div key={idx} className="relative flex h-[380px] flex-col justify-end p-6 hover:bg-white/5 transition-colors">
-                {/* Step bar */}
-                <div 
-                  className="absolute left-0 right-0 h-1.5 bg-slate-600"
-                  style={{ bottom: `${35 + idx * 12}%` }}
-                />
-                
-                {/* Content */}
-                <div className="relative z-10">
-                  <p className="text-[15px] font-medium leading-relaxed text-white">
-                    {item.text}
-                  </p>
-                  <p className="mt-3 tnum text-sm font-semibold text-white/50">
-                    {item.year}
-                  </p>
+              <div key={idx} className="relative flex flex-1 flex-col items-center px-3">
+                {/* 위 칸 — 위로 붙는 항목만 채운다 */}
+                <div className="flex h-32 w-full flex-col items-center justify-end text-center">
+                  {isAbove && (
+                    <>
+                      <p className="text-xs leading-relaxed text-white/50">
+                        {item.text}
+                      </p>
+                      <p className="tnum mt-3 text-xl font-bold text-white">
+                        {item.year}
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                {/* 점 — 얇은 원형 띠 하나 + 가운데 점 */}
+                <div className="relative z-10 flex flex-col items-center">
+                  {isAbove && <div className="h-6 w-px bg-white/25" />}
+                  <div className="relative flex size-6 items-center justify-center">
+                    <span className="absolute inset-0 rounded-full border border-white/35" />
+                    <span className="size-2 rounded-full bg-white" />
+                  </div>
+                  {!isAbove && <div className="h-6 w-px bg-white/25" />}
+                </div>
+
+                {/* 아래 칸 — 아래로 붙는 항목만 채운다 */}
+                <div className="flex h-32 w-full flex-col items-center justify-start text-center">
+                  {!isAbove && (
+                    <>
+                      <p className="tnum mt-3 text-xl font-bold text-white">
+                        {item.year}
+                      </p>
+                      <p className="mt-3 text-xs leading-relaxed text-white/50">
+                        {item.text}
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             );
@@ -274,15 +305,15 @@ function Location() {
     <Section tone="white" size="lg">
       <PillHeading
         eyebrow="Location"
-        description="오시는 길"
+        description="찾아오시는 길"
         eyebrowClassName="inline-block w-auto px-3 py-1 border-white/60 text-white"
         descriptionClassName="text-3xl font-bold text-white md:text-4xl"
         lineClassName="opacity-0 h-8"
       />
 
-      <div className="mt-28 grid items-start gap-10 lg:grid-cols-2">
+      <div className="mt-16 grid items-start gap-10 lg:grid-cols-2">
         <Reveal>
-          <div>
+          <div className="mx-auto w-[85%]">
             <p className="text-xl font-semibold">{SITE.name}</p>
             <p className="mt-3 text-lg leading-[1.8] text-navy-100">
               {SITE.address}
@@ -322,7 +353,7 @@ function Location() {
           </div>
         </Reveal>
 
-        <Reveal delay={120} className="mx-auto w-full max-w-xl lg:mx-0">
+        <Reveal delay={120} className="ml-auto w-[75%]">
           {/*
             지도 — 기획서 5.2 카카오맵 API 임베드.
             NEXT_PUBLIC_KAKAO_MAP_KEY 가 없으면 SDK 를 로드하지 않고

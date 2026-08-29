@@ -40,12 +40,17 @@ export function TechApproachSection({
           descriptionClassName={descriptionClassName}
         />
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {/*
+          모바일 — 가로 스크롤 캐러셀. 카드 2개는 온전히 보이고 3번째가 살짝
+          걸쳐 보여야 "옆에 더 있다"는 게 드러난다. 스크롤바는 숨긴다.
+          sm 이상은 기존 그리드로 되돌아간다.
+        */}
+        <div className="mt-14 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
           {axes.map((axis, index) => (
-            <Reveal key={axis.key} delay={index * 80}>
+            <Reveal key={axis.key} delay={index * 80} className="w-[45%] shrink-0 snap-start sm:w-auto sm:shrink">
               <Link
                 href={href}
-                className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden rounded-lg border border-white/15 bg-ink-800"
+                className="group relative flex aspect-[3/4] w-full flex-col justify-end overflow-hidden rounded-lg border border-white/15 bg-ink-800"
               >
                 {axis.image && (
                   <Image
@@ -66,7 +71,7 @@ export function TechApproachSection({
                   {detailLabel} <Chevron />
                 </span>
 
-                <div className="relative z-10 p-5">
+                <div className="relative z-10 p-4 sm:p-5">
                   <span className="tnum text-sm font-semibold text-navy-500">
                     0{index + 1}
                   </span>

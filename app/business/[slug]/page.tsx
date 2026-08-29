@@ -104,7 +104,7 @@ export default async function BusinessDetailPage({
                   </h1>
                 </Reveal>
                 {/* 한 줄씩 끊어 보여 준다. heroLines 가 없으면 headline 한 줄 */}
-                <div className="mt-12 max-w-xl text-base leading-[1.6] text-navy-100 md:mt-16 md:text-lg">
+                <div className="mt-12 max-w-3xl text-base leading-[1.6] text-navy-100 md:mt-16 md:text-lg">
                   {(business.heroLines ?? [business.headline]).map(
                     (line, index) => (
                       <Reveal
@@ -123,7 +123,11 @@ export default async function BusinessDetailPage({
                 <HeroPhoto
                   image={business.heroPhoto}
                   neon={business.heroNeon}
-                  className="mx-auto xl:mx-0"
+                  className={`mx-auto xl:mx-0 ${
+                    business.slug === "healthcare"
+                      ? "hero-visual--wide xl:translate-x-6"
+                      : ""
+                  }`}
                 />
               ) : (
                 <AuiOrb className="mx-auto xl:mx-0" />
@@ -454,8 +458,8 @@ export default async function BusinessDetailPage({
               {/* 신뢰 장치 — 별도 인용 블록으로 강조 (기획서 4.5 디자인 의도) */}
               {business.status.pullQuote && (
                 <Reveal delay={120}>
-                  <blockquote className="mt-12 max-w-3xl border-l-4 border-navy-300 bg-ink-900 py-8 pr-8 pl-8">
-                    <p className="text-lg leading-[1.9] font-medium text-white md:text-xl">
+                  <blockquote className="mt-12 max-w-3xl">
+                    <p className="text-lg leading-[1.9] font-semibold text-white md:text-xl">
                       {business.status.pullQuote}
                     </p>
                   </blockquote>

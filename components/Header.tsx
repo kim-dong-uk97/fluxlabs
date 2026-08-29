@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
-import { NAV } from "@/lib/site";
+import { NAV, NAV_EN } from "@/lib/site";
 
 /**
  * GNB — 기획서 3.1 · 6장
@@ -69,6 +69,7 @@ export function Header() {
   // 영문 번역이 있는 라우트 — 홈과 사업영역(목록·상세)
   const translation = translationPair(pathname);
   const isEnglish = pathname.startsWith("/en");
+  const nav = isEnglish ? NAV_EN : NAV;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > SCROLL_THRESHOLD);
@@ -112,8 +113,10 @@ export function Header() {
       </a>
 
       <header
-        className={`on-navy fixed inset-x-0 top-0 z-50 bg-transparent transition-[height] duration-300 ${
-          transparent ? "h-20" : "h-16"
+        className={`on-navy fixed inset-x-0 top-0 z-50 transition-[height,background-color,box-shadow] duration-300 ${
+          transparent
+            ? "h-20 bg-transparent"
+            : "h-16 bg-white/15 shadow-[0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm"
         }`}
       >
         <div className="mx-auto flex h-full max-w-[1600px] items-center px-5 md:px-10 lg:px-20">
@@ -148,7 +151,7 @@ export function Header() {
             className="hidden items-center gap-0.5 rounded-2xl border border-white/15 bg-white/5 p-0.5 lg:flex"
             aria-label="주요 메뉴"
           >
-            {NAV.map((item) =>
+            {nav.map((item) =>
               "children" in item ? (
                 <DesktopDropdown key={item.label} item={item} />
               ) : (
@@ -168,7 +171,7 @@ export function Header() {
               href="/contact"
               className="inline-flex h-10 origin-center scale-[0.85] items-center gap-1.5 rounded-2xl bg-white px-5 text-[0.95rem] font-semibold text-navy-900 transition-colors hover:bg-navy-100"
             >
-              문의하기
+              {isEnglish ? "Contact" : "문의하기"}
               <span aria-hidden="true">▸</span>
             </Link>
 
@@ -241,14 +244,19 @@ export function Header() {
       </header>
 
       {/* ---- 모바일 풀스크린 오버레이 (기획서 6장) ---- */}
-      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <MobileMenu
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        nav={nav}
+        isEnglish={isEnglish}
+      />
     </>
   );
 }
 
 /* ------------------------------------------------------------------------- */
 
-type NavItem = (typeof NAV)[number];
+type NavItem = (typeof NAV)[number] | (typeof NAV_EN)[number];
 
 function DesktopDropdown({
   item,
@@ -295,8 +303,15 @@ function DesktopDropdown({
       {open && (
         <div className="absolute top-full left-0 pt-2">
           <ul className="min-w-[16rem] rounded-lg border border-white/10 bg-ink-900 py-2 shadow-lg">
-            {item.children.map((child) => (
+            {item.children.map((child, index) => (
               <li key={child.href}>
+                {/* 리테일·웨어러블·의료기관(사업영역)과 AI 어시스턴트(서비스)를 구분선으로 나눈다 */}
+                {index === item.children.length - 1 && (
+                  <div
+                    aria-hidden="true"
+                    className="my-2 border-t border-white/10"
+                  />
+                )}
                 <Link
                   href={child.href}
                   className="block px-4 py-2.5 text-[0.9rem] text-white transition-colors hover:bg-white/5"
@@ -315,9 +330,13 @@ function DesktopDropdown({
 function MobileMenu({
   open,
   onClose,
+  nav,
+  isEnglish,
 }: {
   open: boolean;
   onClose: () => void;
+  nav: typeof NAV | typeof NAV_EN;
+  isEnglish: boolean;
 }) {
   const [businessOpen, setBusinessOpen] = useState(false);
 
@@ -332,7 +351,7 @@ function MobileMenu({
       <div className="px-5 pb-16">
         <nav aria-label="모바일 메뉴">
           <ul className="divide-y divide-white/10">
-            {NAV.map((item) =>
+            {nav.map((item) =>
               "children" in item ? (
                 <li key={item.label}>
                   {/* 사업영역 아코디언 (기획서 6장) */}
@@ -355,8 +374,14 @@ function MobileMenu({
 
                   {businessOpen && (
                     <ul className="pb-4">
-                      {item.children.map((child) => (
+                      {item.children.map((child, index) => (
                         <li key={child.href}>
+                          {index === item.children.length - 1 && (
+                            <div
+                              aria-hidden="true"
+                              className="my-2 ml-4 border-t border-white/10"
+                            />
+                          )}
                           <Link
                             href={child.href}
                             onClick={onClose}
@@ -389,7 +414,7 @@ function MobileMenu({
           onClick={onClose}
           className="mt-8 inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-white font-semibold text-navy-900"
         >
-          문의하기
+          {isEnglish ? "Contact" : "문의하기"}
           <span aria-hidden="true">▸</span>
         </Link>
       </div>

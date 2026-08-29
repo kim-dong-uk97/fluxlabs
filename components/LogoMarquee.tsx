@@ -36,7 +36,7 @@ export function LogoMarquee({ logos, label }: Props) {
 
   return (
     <div
-      className="marquee relative overflow-hidden border-y border-white/15 py-11"
+      className="marquee relative overflow-hidden py-6 md:py-11"
       role="group"
       aria-label={label}
     >
@@ -48,7 +48,7 @@ export function LogoMarquee({ logos, label }: Props) {
               key={`${copy}-${index}-${logo.src}`}
               aria-hidden={copy === 1 ? "true" : undefined}
               // 간격은 gap 이 아니라 항목 바깥 여백으로 (위 2번 주석 참고)
-              className="relative mx-7 h-11 w-[140px] shrink-0 md:h-12 md:w-[160px]"
+              className="relative mx-3 h-9 w-[90px] shrink-0 sm:mx-5 sm:h-10 sm:w-[120px] md:mx-7 md:h-12 md:w-[160px]"
             >
               <Image
                 src={logo.src}

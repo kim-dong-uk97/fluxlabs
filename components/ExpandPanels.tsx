@@ -35,7 +35,7 @@ export function ExpandPanels({ items }: Props) {
   const [active, setActive] = useState(0);
 
   return (
-    <div className="flex h-[400px] gap-1 overflow-hidden bg-ink-950 md:h-[520px]">
+    <div className="flex flex-col gap-1 overflow-hidden bg-ink-950 md:h-[520px] md:flex-row">
       {items.map((item, index) => {
         const isActive = index === active;
 
@@ -71,7 +71,7 @@ export function ExpandPanels({ items }: Props) {
                 {item.title}
               </span>
               {isActive && item.description && item.description.length > 0 && (
-                <div className="mt-3 max-w-xs space-y-1">
+                <div className="mt-3 hidden max-w-xs space-y-1 md:block">
                   {item.description.map((paragraph, i) => (
                     <p
                       key={i}
@@ -86,9 +86,10 @@ export function ExpandPanels({ items }: Props) {
           </>
         );
 
-        const style = { flexGrow: isActive ? 4 : 1, flexBasis: 0 };
-        const className =
-          "group relative min-w-0 shrink-0 overflow-hidden transition-[flex-grow] duration-150 ease-out";
+        // 모바일은 고정 높이로 세로 스택, md 이상은 기존처럼 가로 폭을 나눠 갖는다
+        const className = `group relative h-28 min-w-0 shrink-0 overflow-hidden transition-[flex-grow] duration-150 ease-out md:h-auto ${
+          isActive ? "md:flex-[4_0_0%]" : "md:flex-[1_0_0%]"
+        }`;
 
         if (item.href) {
           return (
@@ -97,7 +98,6 @@ export function ExpandPanels({ items }: Props) {
               href={item.href}
               onMouseEnter={() => setActive(index)}
               onFocus={() => setActive(index)}
-              style={style}
               className={className}
             >
               {inner}
@@ -111,7 +111,6 @@ export function ExpandPanels({ items }: Props) {
             tabIndex={0}
             onMouseEnter={() => setActive(index)}
             onFocus={() => setActive(index)}
-            style={style}
             className={className}
           >
             {inner}

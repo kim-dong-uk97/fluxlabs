@@ -175,7 +175,7 @@ and FLUXLABS is scaling into the operations platform that connects every one of 
         "Already deployed and running at a general hospital operating multiple departments, and we are preparing to expand nationwide using it as the standard model.",
       ],
       pullQuote:
-        "Healthcare is a domain where errors are not permitted. We began the design by drawing a clear line between what an agent may handle automatically and what a person must always confirm.",
+        "“Healthcare is a domain where errors are not permitted. We began the design by drawing a clear line between what an agent may handle automatically and what a person must always confirm.”",
     },
   },
 

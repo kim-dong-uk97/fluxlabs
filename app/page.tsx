@@ -348,7 +348,7 @@ function ImpactSection() {
 
           {/* 배경과 이어지도록 가장자리를 방사형으로 페이드아웃한다 (박스 경계 없음) */}
           <Reveal delay={120}>
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-xl">
+            <div className="relative mx-auto aspect-square w-full max-w-xl lg:aspect-[4/5]">
               <Image
                 src="/impact/beam.png"
                 alt="중심으로 모여드는 빛줄기"
@@ -381,11 +381,13 @@ function PartnersSection() {
   return (
     <section className="bg-ink-950 py-8 text-white md:py-10" id="partners">
       {/* 로고 띠 위에 얹는 작은 라벨 — 헤드라인이 아니라 스트립의 이름표다 */}
-      <Reveal>
-        <p className="text-center text-base font-semibold tracking-[0.18em] text-white/60 uppercase md:text-lg">
-          Partners of the Best
-        </p>
-      </Reveal>
+      <Container>
+        <Reveal>
+          <p className="text-center text-base font-semibold tracking-[0.18em] text-white/60 uppercase md:text-lg">
+            Partners of the Best
+          </p>
+        </Reveal>
+      </Container>
 
       {/*
         ⚠️ 보안 체크리스트 A-1
@@ -404,9 +406,9 @@ function PartnersSection() {
         원본 SVG 가 흰색(fill="white")이라 검정 바탕에서는 필터 없이
         그대로 쓴다. 흰 바탕에 얹을 때만 invert(1) 이 필요했다.
       */}
-      <div className="mt-5">
+      <Container className="mt-5">
         <LogoMarquee logos={LOGO_WALL} label="관계사 로고" />
-      </div>
+      </Container>
     </section>
   );
 }
@@ -477,6 +479,11 @@ function CtaBanner() {
               <div
                 aria-hidden="true"
                 className="absolute inset-0 bg-gradient-to-b from-ink-950/85 via-ink-950/25 to-ink-950/90"
+              />
+              {/* 글씨 구간만 한 번 더 눌러 가독성 확보 (버튼 쪽 그라디언트는 그대로 둔다) */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-x-0 top-0 h-3/4 bg-gradient-to-b from-ink-950/95 via-ink-950/70 to-transparent"
               />
 
               <div className="relative z-10">

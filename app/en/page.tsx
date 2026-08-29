@@ -345,7 +345,7 @@ function ImpactSection() {
           </div>
 
           <Reveal delay={120}>
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-xl">
+            <div className="relative mx-auto aspect-square w-full max-w-xl lg:aspect-[4/5]">
               <Image
                 src="/impact/beam.png"
                 alt="Beams of light converging at the center"
@@ -377,15 +377,17 @@ const LOGO_WALL = Array.from({ length: 8 }, (_, i) => ({
 function PartnersSection() {
   return (
     <section className="bg-ink-950 py-8 text-white md:py-10" id="partners">
-      <Reveal>
-        <p className="text-center text-base font-semibold tracking-[0.18em] text-white/60 uppercase md:text-lg">
-          Partners of the Best
-        </p>
-      </Reveal>
+      <Container>
+        <Reveal>
+          <p className="text-center text-base font-semibold tracking-[0.18em] text-white/60 uppercase md:text-lg">
+            Partners of the Best
+          </p>
+        </Reveal>
+      </Container>
 
-      <div className="mt-5">
+      <Container className="mt-5">
         <LogoMarquee logos={LOGO_WALL} label="Partner logos" />
-      </div>
+      </Container>
     </section>
   );
 }
@@ -457,6 +459,10 @@ function CtaBanner() {
               <div
                 aria-hidden="true"
                 className="absolute inset-0 bg-gradient-to-b from-ink-950/85 via-ink-950/25 to-ink-950/90"
+              />
+              <div
+                aria-hidden="true"
+                className="absolute inset-x-0 top-0 h-3/4 bg-gradient-to-b from-ink-950/95 via-ink-950/70 to-transparent"
               />
 
               <div className="relative z-10">

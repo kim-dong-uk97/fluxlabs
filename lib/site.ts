@@ -75,6 +75,28 @@ export const NAV = [
 ] as const;
 
 /**
+ * GNB 영문판 — /en 이하 라우트에서 쓴다. 사업영역 하위 4개 분야 이름은
+ * lib/business-en.ts 의 name 값과 맞춘다. 인재영입은 아직 영문 페이지가
+ * 없어 링크는 한국어 /careers 로 그대로 둔다.
+ */
+export const NAV_EN = [
+  { label: "About", href: "/en/about" },
+  {
+    label: "Business",
+    children: [
+      { label: "AUI Retail Operations Platform", href: "/en/business/nxi" },
+      { label: "Wearable On-device Agent", href: "/en/business/wearable" },
+      {
+        label: "Healthcare Front-office Automation",
+        href: "/en/business/healthcare",
+      },
+      { label: "AI Assistant Service", href: "/en/business/assistant" },
+    ],
+  },
+  { label: "Careers", href: "/careers" },
+] as const;
+
+/**
  * 문의 유형 — 기획서 5.5 폼 필드 정의
  * value 는 `?type=` 쿼리스트링으로 사전 선택에 쓰인다.
  */
