@@ -48,9 +48,9 @@ const TONE_CLASS: Record<NonNullable<SectionProps["tone"]>, string> = {
 };
 
 const SIZE_CLASS: Record<NonNullable<SectionProps["size"]>, string> = {
-  sm: "py-14 md:py-20",
-  md: "py-20 md:py-28",
-  lg: "py-24 md:py-36",
+  sm: "py-10 md:py-20",
+  md: "py-14 md:py-28",
+  lg: "py-16 md:py-36",
 };
 
 export function Section({

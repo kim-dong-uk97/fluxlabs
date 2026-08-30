@@ -77,7 +77,7 @@ function Hero() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_60%_50%,rgba(255,255,255,0.2)_0%,rgba(255,255,255,0.08)_45%,transparent_75%)]"
       />
 
-      <Container className="relative pt-32 pb-28 text-center md:pt-40 md:pb-32">
+      <Container className="relative pt-24 pb-20 text-center md:pt-40 md:pb-32">
         <Reveal>
           <h1
             id="hero-heading"
@@ -137,7 +137,7 @@ function Hero() {
 
 function CompanyDefinition() {
   return (
-    <Section tone="white" size="lg" className="!py-28 md:!py-40">
+    <Section tone="white" size="lg" className="!py-16 md:!py-40">
       <div className="grid gap-14 sm:grid-cols-[1.4fr_1fr] sm:items-center lg:gap-64">
         {/*
           사진 2장 — 대각 구도. 섹션을 정확히 반으로 나눈 왼쪽 절반을 꽉
@@ -261,7 +261,7 @@ const BUSINESS_PANELS: ExpandPanelItem[] = BUSINESSES.map((business) => ({
 
 function BusinessGrid() {
   return (
-    <section className="on-navy bg-ink-950 py-28 text-white md:py-40" id="business">
+    <section className="on-navy bg-ink-950 py-16 text-white md:py-40" id="business">
       <Container>
         <PillHeading
           eyebrow="Business"
@@ -304,7 +304,7 @@ const IMPACT_VALUES = [
 function ImpactSection() {
   return (
     <section
-      className="on-navy bg-ink-950 py-28 text-white md:py-40"
+      className="on-navy bg-ink-950 py-16 text-white md:py-40"
       id="impact"
     >
       <Container>
@@ -464,7 +464,7 @@ const CTA_CARDS = [
 
 function CtaBanner() {
   return (
-    <Section tone="navy-deep" size="lg" className="!py-28 md:!py-40">
+    <Section tone="navy-deep" size="lg" className="!py-16 md:!py-40">
       <div className="grid gap-8 lg:grid-cols-2">
         {CTA_CARDS.map((card, index) => (
           <Reveal key={card.key} delay={index * 120}>

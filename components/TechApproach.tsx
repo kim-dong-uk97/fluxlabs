@@ -32,7 +32,7 @@ export function TechApproachSection({
   href = "/#business",
 }: Props) {
   return (
-    <section className="on-navy bg-ink-950 py-28 text-white md:py-40">
+    <section className="on-navy bg-ink-950 py-16 text-white md:py-40">
       <Container>
         <PillHeading
           eyebrow={eyebrow}
@@ -47,7 +47,7 @@ export function TechApproachSection({
         */}
         <div className="mt-14 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
           {axes.map((axis, index) => (
-            <Reveal key={axis.key} delay={index * 80} className="w-[45%] shrink-0 snap-start sm:w-auto sm:shrink">
+            <Reveal key={axis.key} delay={index * 80} className="w-[68%] shrink-0 snap-start sm:w-auto sm:shrink">
               <Link
                 href={href}
                 className="group relative flex aspect-[3/4] w-full flex-col justify-end overflow-hidden rounded-lg border border-white/15 bg-ink-800"
@@ -64,14 +64,14 @@ export function TechApproachSection({
 
                 <div
                   aria-hidden="true"
-                  className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/40 to-transparent"
+                  className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/20 to-transparent sm:via-ink-950/40"
                 />
 
                 <span className="absolute top-5 right-5 z-10 inline-flex items-center gap-1 text-[10px] font-semibold text-white opacity-0 transition-opacity duration-300 group-hover:opacity-80">
                   {detailLabel} <Chevron />
                 </span>
 
-                <div className="relative z-10 p-4 sm:p-5">
+                <div className="relative z-10 p-3 sm:p-5">
                   <span className="tnum text-sm font-semibold text-navy-500">
                     0{index + 1}
                   </span>

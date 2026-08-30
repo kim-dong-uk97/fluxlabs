@@ -85,7 +85,7 @@ export default async function BusinessDetailPage({
       */}
       {business.heroOrb ? (
         <section
-          className={`on-navy relative flex min-h-[560px] items-center overflow-hidden bg-black pt-28 pb-16 text-white md:min-h-[72vh] md:pt-36 md:pb-24 ${
+          className={`on-navy relative flex min-h-[560px] items-center overflow-hidden bg-black pt-20 pb-12 text-white md:min-h-[72vh] md:pt-36 md:pb-24 ${
             business.heroNeon ? "hero-neon" : ""
           }`}
         >
@@ -137,7 +137,7 @@ export default async function BusinessDetailPage({
         </section>
       ) : (
         <section
-          className={`on-navy relative overflow-hidden pt-32 pb-20 text-white md:pt-44 md:pb-28 ${
+          className={`on-navy relative overflow-hidden pt-24 pb-14 text-white md:pt-44 md:pb-28 ${
             business.heroImage ? "bg-black" : "bg-ink-950"
           }`}
         >
