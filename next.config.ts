@@ -70,6 +70,22 @@ const nextConfig: NextConfig = {
    * 브라우저가 인라인 실행하지 않게 한다.
    */
   images: {
+    /*
+     * Next 16 부터 quality 는 허용 목록에 있는 값만 쓸 수 있다 (기본 [75]).
+     * 채용 히어로처럼 어두운 그라디언트가 넓은 사진은 75 에서 밴딩이 보여
+     * 90 을 함께 열어 둔다.
+     */
+    qualities: [75, 90, 95],
+
+    /*
+     * 히어로처럼 어두운 파랑 그라디언트가 넓은 사진은 WebP 로 뽑으면 밴딩(띠)이
+     * 남는다. AVIF 는 같은 화질에서 더 정밀하게 눌러 이 띠가 훨씬 덜 보인다.
+     * 지원하지 않는 브라우저는 뒤에 적힌 WebP 로 자동 폴백된다.
+     *
+     * 대가: 첫 요청 때 인코딩이 약 1.5배 느리다. 이후에는 캐시라 차이 없다.
+     */
+    formats: ["image/avif", "image/webp"],
+
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",

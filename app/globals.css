@@ -30,6 +30,14 @@
     아주 옅게 남긴 무채색에 가까운 톤을 쓴다. 단계는 콘텐츠 위계(페이지 바탕 →
     교차 섹션 → 카드/표면 → 강조 표면) 를 나타낸다.
   */
+  /*
+    포인트 컬러 — 섹션 머리말(PROBLEMS · PEOPLE) 같은 작은 강조에 쓴다.
+    카드 제목 띠(.card-band)가 지나는 파랑→보라 그라디언트의 한가운데 색이라
+    둘이 같은 계열로 묶인다. 어두운 바탕 위에서만 쓴다 — 밝은 바탕에서는
+    대비가 모자란다.
+  */
+  --color-iris: #9aabff;
+
   --color-ink-950: #0a0b0f;
   --color-ink-900: #121319;
   --color-ink-800: #1b1d25;
@@ -145,6 +153,204 @@
 }
 
 /* ==========================================================================
+   채용 히어로 — 스크롤에 따라 꽉 차게 커진다 (app/careers/page.tsx)
+   ========================================================================== */
+/*
+  스크롤 연동 애니메이션(animation-timeline)을 쓴다. JS 스크롤 리스너와 달리
+  브라우저가 직접 굴려서 메인 스레드를 잡지 않고, 스크롤과 어긋나지 않는다.
+
+  방향 — 처음에 꽉 찬 상태로 두고, 스크롤하면 줄어들면서 아래 카피가 뜬다.
+  기본 상태(= 애니메이션이 안 걸리는 경우)도 이 출발점과 같아서, 미지원
+  브라우저나 모션 최소화 설정에서는 꽉 찬 히어로가 그대로 남는다.
+
+  ⚠️ 커지는 방향으로 만들면 이미지가 뭉갠다. 브라우저는 요소를 처음 크기로
+     한 번 래스터화한 뒤 그 결과를 확대하므로, 1 보다 크게 키우면 확대된
+     비트맵이 그대로 보인다. 줄이는 방향은 항상 원본보다 작게 그리므로
+     이 문제가 없다.
+
+  width 가 아니라 크기 변형으로 키운다. 레이아웃을 다시 계산하지 않아
+  스크롤 중에 끊기지 않고, 아래 콘텐츠가 밀리지도 않는다.
+
+  ⚠️ transform 이 아니라 scale 속성을 쓴다. Tailwind v4 는 가운데 정렬에
+     translate 속성(-translate-x-1/2 등)을 쓰는데, 여기서 transform 을 함께
+     지정하면 두 값이 더해져 요소가 두 배로 밀려난다. 개별 속성끼리는
+     translate → scale 순으로 적용되므로 이렇게 두면 가운데를 잡은 채로
+     제자리에서 커진다.
+*/
+@keyframes careers-hero-zoom {
+  from {
+    scale: 1;
+    border-radius: 0;
+  }
+  to {
+    scale: 0.82;
+    border-radius: 1.25rem;
+  }
+}
+
+/*
+  장면 전환 — 히어로는 세 장면을 스크롤로 지나간다.
+
+  요소마다 등장 구간이 다르므로, 구간만 CSS 변수로 받고 애니메이션 정의는
+  세 종류만 둔다. fill: both 라 구간 앞뒤에는 시작·끝 상태가 그대로 남는다.
+   · out     : 처음부터 보이다가 사라진다 (첫 장면)
+   · through : 나타났다가 사라진다 (가운데 장면)
+   · in      : 나타나서 끝까지 남는다 (마지막 장면)
+
+  기본값은 opacity 0 이고, 애니메이션이 걸리지 않는 환경(미지원 브라우저·
+  모션 최소화·lg 미만)에서 보여야 할 요소에만 --base 를 붙여 1 로 되돌린다.
+  그래야 그런 환경에서도 첫 장면과 첫 카피가 남는다.
+*/
+@keyframes careers-step-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes careers-step-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes careers-step-through {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.careers-step {
+  opacity: 0;
+}
+
+.careers-step--base {
+  opacity: 1;
+}
+
+/* 확대는 무대 높이가 확보되는 lg 이상에서만. 모바일은 이미 가로를 꽉 채운다 */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .careers-hero-zoom {
+      animation: careers-hero-zoom linear both;
+      animation-timeline: scroll(root block);
+      /*
+        구간 — 히어로는 200vh 짜리 스크롤 구간 안에 sticky 로 붙어 있고,
+        화면 높이(100vh)를 뺀 100vh 동안 제자리에 머문다. 축소는 그 안에서
+        끝나야 하므로 70vh 에 맞춘다.
+      */
+      animation-range: 0 60vh;
+    }
+
+    .careers-step {
+      animation-timeline: scroll(root block);
+      animation-range: var(--step-from) var(--step-to);
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+    }
+
+    .careers-step--out {
+      animation-name: careers-step-out;
+    }
+
+    .careers-step--through {
+      animation-name: careers-step-through;
+    }
+
+    .careers-step--in {
+      animation-name: careers-step-in;
+    }
+  }
+}
+
+/* ==========================================================================
+   접근 방식 4단계 — 아치 카드 표면 (app/page.tsx · app/en/page.tsx)
+   ========================================================================== */
+/*
+  위는 거의 투명한 검정(알파 0.1), 아래는 파랑 #3f71de.
+  윗부분이 비어 있어 뒤가 비치고, 아래로 내려가며 파랑이 차오른다.
+
+  카드 바닥 가운데는 아치 모양으로 파내고 그 자리에 구슬이 앉는다.
+  파낸 자리는 섹션 배경색으로 채워 카드 밖과 이어지게 한다.
+
+  ⚠️ 뒤에 비칠 것이 없으면 윗부분이 그냥 빈칸으로 보인다. 이 카드가 놓이는
+     섹션에 배경 빛을 함께 깔아 두어야 한다 (ProcessSteps 안의 radial 그라디언트).
+  ⚠️ 아치 조각과 "테두리 지우개" 조각은 섹션 배경(bg-ink-950)과 같은 색을 쓴다.
+     섹션 배경색을 바꾸면 그 둘도 함께 바꿔야 파낸 자리가 이어져 보인다.
+  ⚠️ 그라디언트 끝 색을 바꾸면 page.tsx 의 조각들(#3f71de)도 함께 바꿀 것.
+*/
+.step-card-surface {
+  /*
+    가운데 스톱은 두 끝 색을 섞은 값보다 어둡게 잡는다. 두 스톱만 두면 중간이
+    자동으로 밝은 중간 파랑이 되어 카드가 위에서부터 붕 뜬다.
+  */
+  background-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(10, 22, 58, 0.75) 56%,
+    #3f71de 100%
+  );
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+/* ==========================================================================
+   찾고 있는 사람 — 유리 카드 (app/careers/page.tsx)
+   ========================================================================== */
+/*
+  뒤에 깔린 그라데이션이 판을 통해 흐릿하게 비치는 유리판.
+
+  세 겹이 함께 있어야 유리로 보인다. 하나라도 빠지면 그냥 반투명 사각형이다.
+   1. backdrop-filter — 뒤 배경을 흐린다. 이게 없으면 유리가 아니라 색 필터다.
+   2. 위에서 아래로 흐르는 옅은 흰 그라데이션 — 판 자체의 두께감.
+   3. inset 하이라이트 1px — 윗변에만 빛이 걸리는 유리 모서리.
+
+  ⚠️ backdrop-filter 는 뒤에 비칠 것이 있어야 의미가 있다. 이 카드가 놓이는
+     섹션에는 반드시 배경 그라데이션이 함께 있어야 한다.
+*/
+.glass-card {
+  position: relative;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-image: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.085) 0%,
+    rgba(255, 255, 255, 0.022) 45%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 24px 60px -32px rgba(0, 0, 0, 0.9);
+}
+
+/* 제목과 본문을 가르는 선 — 유리 위라 아주 옅게만 */
+.glass-card__rule {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.06) 60%,
+    transparent 100%
+  );
+}
+
+/* ==========================================================================
    로고 마퀴 — 홈 S5 관계사 스트립 (components/LogoMarquee.tsx)
    ========================================================================== */
 .marquee {
@@ -195,10 +401,13 @@
   글자와 버튼은 모두 검정 계열로 뒤집는다.
 */
 .cta-band {
-  /* 폭은 화면 끝까지 두고 네 모서리만 둥글린다 — 어두운 바탕 위에 놓인
-     흰 판처럼 읽힌다 */
-  border-radius: 2rem;
+  /* 폭은 화면 끝까지. 모서리는 깎지 않는다 */
   padding: 5rem 0;
+  /*
+    어두운 페이지에서 유일하게 밝은 칸 — 흰 바탕에 검정 글자.
+    ⚠️ 판 색을 어둡게 바꾸면 이 칸 안의 셋을 함께 뒤집어야 한다
+       (.cta-band color / CtaPanel 의 설명 문단 / .cta-panel__action).
+  */
   background: #ffffff;
   color: #0a0b0f;
   text-align: center;
@@ -206,12 +415,11 @@
 
 @media (min-width: 768px) {
   .cta-band {
-    border-radius: 2.5rem;
     padding: 7.5rem 0;
   }
 }
 
-/* 로고 — 흰 바탕 위에 그대로 올린다 (배지도 테두리도 두지 않는다) */
+/* 로고 — 판 위에 그대로 올린다 (배지도 테두리도 두지 않는다) */
 .cta-panel__mark {
   display: block;
   width: 3.5rem;

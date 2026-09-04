@@ -11,6 +11,8 @@ import { NAV, NAV_EN } from "@/lib/site";
  *
  *  - 상단 고정. 스크롤 100px 이상 시 배경 불투명 + 높이 축소 (6장)
  *  - 사업영역 드롭다운에 4개 하위 항목 직접 노출 (3.1)
+ *    넷을 가르는 구분선은 두지 않는다. AI 어시스턴트를 "서비스" 로 떼어
+ *    놓던 선이 있었으나, 넷 모두 사업영역으로 다루기로 하면서 걷어냈다.
  *  - 문의하기는 버튼 스타일로 시각적 우선순위 부여 (3.1)
  *  - KOR/ENG 토글은 번역이 있는 라우트(현재 홈만)에서만 활성화 (3.1)
  *  - 로고 크기: PC 160/140px · 태블릿 140px · 모바일 120px (8.3)
@@ -303,15 +305,8 @@ function DesktopDropdown({
       {open && (
         <div className="absolute top-full left-0 pt-2">
           <ul className="min-w-[16rem] rounded-lg border border-white/10 bg-ink-900 py-2 shadow-lg">
-            {item.children.map((child, index) => (
+            {item.children.map((child) => (
               <li key={child.href}>
-                {/* 리테일·웨어러블·의료기관(사업영역)과 AI 어시스턴트(서비스)를 구분선으로 나눈다 */}
-                {index === item.children.length - 1 && (
-                  <div
-                    aria-hidden="true"
-                    className="my-2 border-t border-white/10"
-                  />
-                )}
                 <Link
                   href={child.href}
                   className="block px-4 py-2.5 text-[0.9rem] text-white transition-colors hover:bg-white/5"
@@ -374,14 +369,8 @@ function MobileMenu({
 
                   {businessOpen && (
                     <ul className="pb-4">
-                      {item.children.map((child, index) => (
+                      {item.children.map((child) => (
                         <li key={child.href}>
-                          {index === item.children.length - 1 && (
-                            <div
-                              aria-hidden="true"
-                              className="my-2 ml-4 border-t border-white/10"
-                            />
-                          )}
                           <Link
                             href={child.href}
                             onClick={onClose}

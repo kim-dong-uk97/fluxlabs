@@ -94,7 +94,7 @@ export type Business = {
   /**
    * 상세 페이지에서 기술 과제 섹션을 렌더링하지 않는다. 접근 방식 카드가
    * 이미 그 자리를 대신하는 사업에 쓴다. 데이터 자체는 남겨 둔다 —
-   * /careers 의 "우리가 푸는 문제" 목록이 네 사업 모두를 읽어 간다.
+   * /careers 의 "우리가 풀고 있는 문제" 목록이 네 사업 모두를 읽어 간다.
    */
   hideChallengeSection?: boolean;
   /** 기술 과제 — 채용 타깃 대상 핵심 블록 (기획서 5.3) */
@@ -154,7 +154,7 @@ export const BUSINESSES: Business[] = [
     icon: "retail",
     tint: "navy-900",
     category: "리테일",
-    image: { src: "/business/nxi.svg", alt: "AUI 리테일 운영 플랫폼" },
+    image: { src: "/business/new-healthcare.png", alt: "AUI 리테일 운영 플랫폼" },
     heroOrb: true,
     heroLines: [
       "고객은 AI에게 주문·좌석 연장·결제를 요청할 수 있고,",
@@ -218,7 +218,7 @@ export const BUSINESSES: Business[] = [
     icon: "wearable",
     tint: "navy-800",
     category: "웨어러블",
-    image: { src: "/business/wearable.svg", alt: "웨어러블 온디바이스 에이전트" },
+    image: { src: "/business/new-wearable.png", alt: "웨어러블 온디바이스 에이전트" },
     heroOrb: true,
     heroNeon: true,
     heroPhoto: {
@@ -293,7 +293,7 @@ AUI가 더 적합합니다.`,
     tint: "navy-700",
     category: "헬스케어",
     image: {
-      src: "/business/healthcare-card.png",
+      src: "/business/new-unknown.png",
       alt: "의료기관 프론트오피스 자동화",
     },
     heroOrb: true,

@@ -26,6 +26,9 @@ export const SITE = {
   ceo: "김정욱",
   businessNumber: "228-86-00029",
   address: "서울특별시 마포구 동교로12길 38, 5층 (서교동, JH빌딩)",
+  // 영문 푸터용. 등기 주소를 도로명주소 영문 표기 규칙대로 옮긴 것이다.
+  addressEn:
+    "5F, JH Bldg., 38 Donggyo-ro 12-gil, Mapo-gu, Seoul 04030, Republic of Korea",
   addressRegion: "서울특별시",
   addressLocality: "마포구",
   postalCode: "04030",

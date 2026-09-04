@@ -4,12 +4,9 @@ import type { Metadata } from "next";
 import { Section, Container, PillHeading } from "@/components/Section";
 import { ButtonLink, Arrow, Chevron } from "@/components/Button";
 import { Reveal } from "@/components/Reveal";
-import { TechApproachSection } from "@/components/TechApproach";
-import { ImpactIcon } from "@/components/ImpactIcon";
-import { ExpandPanels, type ExpandPanelItem } from "@/components/ExpandPanels";
 import { LogoMarquee } from "@/components/LogoMarquee";
-import { BUSINESSES } from "@/lib/business";
 import { SITE } from "@/lib/site";
+import { TECH_AXES } from "@/lib/tech";
 
 /**
  * 홈 — 기획서 5.1
@@ -28,8 +25,8 @@ export default function HomePage() {
       <Hero />
       <CompanyDefinition />
       <BusinessGrid />
-      <TechApproachSection />
-      <ImpactSection />
+      <ProcessSteps />
+      <AgentGoalVisual />
       <PartnersSection />
       <CtaBanner />
     </>
@@ -45,77 +42,73 @@ function Hero() {
       aria-labelledby="hero-heading"
     >
       {/*
-        배경 — 기획서 5.1 S1 원안은 실사/스톡 소재 금지였으나, 임시로 배경
-        영상을 얹는다. 배포 전 반드시 웹 최적화된 영상으로 교체할 것.
+        배경 — 사진 비율(1.415)이 화면보다 세로로 길어 위아래가 잘린다.
+        기본값(가운데)으로 두면 위아래를 반씩 잘라 위쪽 지평선 빛이 깎이므로,
+        기준점을 25% 로 올려 잘림을 아래쪽 빈 공간에 몰아준다.
       */}
-      <video
-        aria-hidden="true"
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="pointer-events-none absolute inset-0 size-full object-cover"
-      >
-        <source src="/video/hero.mp4" type="video/mp4" />
-      </video>
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_75%_10%,rgba(10,11,15,0.06)_0%,rgba(10,11,15,0.16)_45%,rgba(10,11,15,0.3)_100%)]"
+      <Image
+        src="/company/hero-orb-v8.png"
+        alt=""
+        fill
+        priority
+        quality={95}
+        sizes="100vw"
+        className="pointer-events-none object-cover object-[center_25%]"
       />
       {/*
-        텍스트 가독성용 그라디언트 — 패널(박스) 대신 왼쪽에서 오른쪽으로
-        옅어지는 스크림. 텍스트가 있는 왼쪽만 어둡게 눌러주고 오른쪽은
-        영상이 그대로 드러난다.
+        스크림은 두지 않는다. 글자가 앉는 자리의 원본 밝기가 17~21/255 라
+        흰 굵은 글씨가 그대로 읽힌다. 여기에 어둠을 더 덮으면 어두운 사진에
+        남은 색까지 눌려서 사진이 죽는다.
       */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink-950/45 via-ink-950/16 to-transparent"
-      />
-      {/* 가운데에서 오른쪽으로 살짝 밝게 */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_60%_50%,rgba(255,255,255,0.2)_0%,rgba(255,255,255,0.08)_45%,transparent_75%)]"
-      />
 
-      <Container className="relative pt-24 pb-20 text-center md:pt-40 md:pb-32">
+      <Container className="relative py-24 md:py-32">
+        {/*
+          제목은 사진 속 구를 사이에 두고 짧은 두 단어로 갈린다. 가운데 칸은
+          글자를 넣지 않고 자리만 비워 구가 그대로 드러나게 한다.
+
+          ⚠️ 가운데 빈 칸 폭(md:w-[40vw] lg:w-[38vw])은 사진 속 구 지름보다 넉넉해야 한다.
+             좁으면 글자가 구를 밟는다. 사진을 갈아끼우면 이 값도 같이 볼 것.
+
+          설명 줄이 제목 아래 정확히 붙도록, 아래 grid 도 같은 3칸 구성을 쓴다.
+        */}
         <Reveal>
           <h1
             id="hero-heading"
-            className="text-2xl leading-[1.35] font-bold md:text-4xl lg:text-5xl"
+            className="grid gap-3 text-4xl leading-none font-bold tracking-tight md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-0 md:text-5xl lg:text-6xl"
           >
-            {SITE.tagline.split(", ").map((line, index, lines) => (
-              <span key={line}>
-                {line.split("이해하는").map((part, partIndex, parts) => (
-                  <span key={partIndex}>
-                    {part}
-                    {partIndex < parts.length - 1 && (
-                      <span className="bg-gradient-to-r from-[#356CF5] to-[#a78bfa] bg-clip-text text-transparent">
-                        이해하는
-                      </span>
-                    )}
-                  </span>
-                ))}
-                {index < lines.length - 1 && <br />}
-              </span>
-            ))}
+            <span className="md:justify-self-end md:text-right">
+              우리는
+              {/* 단어 아래 얇은 빛줄 — 왼쪽 단어에만 붙는다 */}
+              <span
+                aria-hidden="true"
+                className="mt-3 block h-[3px] w-full bg-gradient-to-r from-transparent via-[#4a92e5] to-[#bcd9ff] md:mt-4"
+              />
+            </span>
+            <span aria-hidden="true" className="hidden md:block md:w-[40vw] lg:w-[38vw]" />
+            <span className="md:justify-self-start md:text-left">옮깁니다</span>
           </h1>
         </Reveal>
 
+        {/* 설명 — 왼쪽 단어 바로 아래. 제목과 같은 3칸이라 세로선이 맞는다 */}
         <Reveal delay={120}>
-          <p className="mx-auto mt-14 max-w-2xl text-lg leading-[1.8] text-navy-100 md:text-xl">
-            플럭스랩스는 리테일·의료·웨어러블
-            <br />
-            현장의 운영 구조를 AI 에이전트로 다시 설계합니다.
-          </p>
+          <div className="grid md:grid-cols-[1fr_auto_1fr]">
+            <p className="mt-6 text-sm leading-[1.7] whitespace-pre-line text-navy-100 md:mt-8 md:justify-self-end md:text-left">
+              {`플럭스랩스는 리테일·의료·웨어러블 현장의
+운영 구조를 AI 에이전트로 다시 설계합니다.`}
+            </p>
+            <span aria-hidden="true" className="hidden md:block md:w-[40vw] lg:w-[38vw]" />
+            <span aria-hidden="true" className="hidden md:block" />
+          </div>
         </Reveal>
 
+        {/* 버튼 — 구 아래 가운데 */}
         <Reveal delay={240}>
-          <div className="mt-20 flex justify-center">
+          <div className="mt-16 flex justify-center md:mt-24">
             <ButtonLink
               href="/#business"
               tone="dark"
               variant="primary"
-              className="!rounded-full !bg-gradient-to-r !from-[#356CF5] !to-[#a78bfa] !text-white transition-opacity hover:!opacity-90"
+              className="!rounded-full !border !border-white/15 !bg-[#0a0b0f] !text-white transition-colors hover:!bg-[#16181f]"
             >
               서비스 알아보기 <Arrow />
             </ButtonLink>
@@ -137,112 +130,47 @@ function Hero() {
 
 function CompanyDefinition() {
   return (
-    <Section tone="white" size="lg" className="!py-16 md:!py-40">
-      <div className="grid gap-14 sm:grid-cols-[1.4fr_1fr] sm:items-center lg:gap-64">
-        {/*
-          사진 2장 — 대각 구도. 섹션을 정확히 반으로 나눈 왼쪽 절반을 꽉
-          채운다. 왼쪽(아케이드)은 위에, 오른쪽(아카이브)은 아래로 내려
-          위·아래로 어긋나게 배치한다. 흑백·저채도를 유지하되 이전보다
-          살짝 밝게. 확대(zoom) 없이 호버 시 살짝만 밝아진다.
-        */}
-        <div className="flex w-full gap-10 sm:gap-20">
-          <Reveal
-            distance={64}
-            className="group relative h-[380px] w-1/2 overflow-hidden sm:h-[480px]"
-          >
-            <Image
-              src="/company/arcade.png"
-              alt="네온 아케이드 화면 앞에 선 사람"
-              fill
-              sizes="(min-width: 640px) 45vw, 45vw"
-              className="object-cover grayscale brightness-75 transition-[filter] duration-700 ease-[var(--ease-out-soft)] group-hover:brightness-90"
-            />
-          </Reveal>
-          <Reveal
-            distance={64}
-            delay={120}
-            className="group relative mt-16 ml-2 h-[380px] w-1/2 overflow-hidden sm:mt-24 sm:ml-4 sm:h-[480px]"
-          >
-            <Image
-              src="/company/archive.png"
-              alt="정렬된 아카이브 서가"
-              fill
-              sizes="(min-width: 640px) 45vw, 45vw"
-              className="object-cover grayscale brightness-75 transition-[filter] duration-700 ease-[var(--ease-out-soft)] group-hover:brightness-90"
-            />
-          </Reveal>
-        </div>
-
-        <div>
-          {/* 헤드라인 3줄 — 굵기를 번갈아 배치해 리듬을 준다. 줄마다 아래에서 올라오며 순차 등장 */}
+    <Section tone="white" size="lg" className="!py-16 bg-[#0c0c0e] md:!py-40">
+      <div className="mx-auto grid max-w-6xl gap-14 md:grid-cols-2 md:gap-24">
+        {/* 왼쪽 텍스트 영역 */}
+        <div className="flex flex-col">
           <div>
             <Reveal distance={40}>
-              <p className="text-base leading-[1.3] font-medium text-[#6C6C6D] md:text-lg">
-                2015년 설립
-              </p>
+              <div className="inline-block rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-bold tracking-widest text-white uppercase">
+                FOUNDED 2015
+              </div>
             </Reveal>
+
             <Reveal distance={40} delay={100}>
-              <p className="text-base leading-[1.3] font-medium text-[#6C6C6D] md:text-lg">
-                시대의 흐름을 따라
-              </p>
+              <h2 className="mt-6 text-[32px] font-bold text-white leading-tight">
+                2026년 AI Agent 기업으로
+              </h2>
             </Reveal>
+
             <Reveal distance={40} delay={200}>
-              <p className="mt-10 text-2xl leading-[1.3] font-bold md:text-4xl">
-                2026년{" "}
-                <span className="text-[#356CF5]">AI Agent</span> 기업으로
+              <p className="mt-8 max-w-lg text-base leading-relaxed text-navy-100 md:text-lg">
+                플럭스랩스는 금융 IT 영역에서 축적한 시스템 구축 역량<br />
+                위에 AI 에이전트 기술을 결합해, 실제 매출이 발생하는<br />
+                현장의 운영 방식을 바꾸는 일을 합니다.
               </p>
             </Reveal>
           </div>
 
-          <Reveal distance={40} delay={300}>
-            <p className="mt-14 max-w-lg text-lg leading-[2.1] text-navy-100">
-              플럭스랩스는 금융 IT 영역에서 축적한 시스템 구축 역량
-              <br />
-              위에 AI 에이전트 기술을 결합해, 실제 매출이 발생하는
-              <br />
-              현장의 운영 방식을 바꾸는 일을 합니다.
-            </p>
-          </Reveal>
-
-          {/* 설립~현재 스탯 — 가로형. FOUNDED 2015 왼쪽, NOW 2026 오른쪽, 세로선으로 구분 */}
-          <Reveal distance={40} delay={200}>
-            <div className="mt-12 flex items-center gap-6">
-              <div>
-                <p className="text-xs font-semibold tracking-[0.2em] text-[#6C6C6D] uppercase">
-                  Founded
-                </p>
-                <p className="tnum mt-2 text-4xl leading-none font-bold text-[#6C6C6D] md:text-5xl">
-                  2015
-                </p>
-              </div>
-              <div
-                aria-hidden="true"
-                className="h-px w-16 shrink-0 self-center bg-white/20 md:w-24"
-              />
-              <div>
-                <p className="text-xs font-semibold tracking-[0.2em] text-[#356CF5] uppercase">
-                  Now
-                </p>
-                <p className="tnum mt-2 text-4xl leading-none font-bold text-white md:text-5xl">
-                  2026
-                </p>
-                <div
-                  aria-hidden="true"
-                  className="mt-3 h-0.5 w-10 bg-[#356CF5]"
-                />
-              </div>
+          <Reveal distance={40} delay={300} className="mt-16 md:mt-auto">
+            <div className="flex flex-col gap-2.5 text-white md:text-lg">
+              <p className="text-[20px] font-bold text-[#4A92E5] md:text-[22px]">FLUXLABS AGENT GOAL</p>
+              <p className="font-medium">사람을 이해하는 소프트웨어,</p>
+              <p className="font-medium">
+                당신의 의도를 읽고 스스로 판단하여 최적의 결과를 완성합니다.
+              </p>
             </div>
           </Reveal>
-
-          <Reveal distance={40} delay={350}>
-            <Link
-              href="/about"
-              className="mt-16 inline-flex items-center gap-1.5 font-semibold text-white hover:underline"
-            >
-              회사 소개 더 보기 <Arrow />
-            </Link>
-          </Reveal>
         </div>
+
+        {/* 오른쪽 이미지 */}
+        <Reveal distance={64} delay={400} className="relative aspect-[4/3] w-full overflow-hidden rounded-[32px] border border-white/10">
+          <Image src="/company/ai-agent.png" alt="AI Agent" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+        </Reveal>
       </div>
     </Section>
   );
@@ -250,14 +178,41 @@ function CompanyDefinition() {
 
 /* ------------------------------------------- S3 사업영역 4분할 그리드 */
 
-const BUSINESS_PANELS: ExpandPanelItem[] = BUSINESSES.map((business) => ({
-  key: business.slug,
-  title: business.name,
-  description: [...business.problem, ...business.approach],
-  tint: business.tint,
-  href: `/business/${business.slug}`,
-  image: business.image,
-}));
+/**
+ * 사업영역 네 칸 — 사진 한 장에 제목·설명을 얹는다.
+ *
+ * 카드마다 마크업을 따로 쓰지 않고 이 배열로 돌린다. 넷의 글자 크기·위치가
+ * 어긋나지 않게 하려면 한 곳에서 찍어내는 편이 확실하다.
+ *
+ * halves 가 있는 칸은 세로 사진 두 장을 맞대 한 칸을 이룬다 (웨어러블).
+ * 각 장이 이미 안쪽을 보도록 그려져 있어 좌우 반전은 하지 않는다.
+ */
+const BUSINESS_CARDS = [
+  {
+    slug: "nxi",
+    title: "AUI 리테일 운영 플랫폼",
+    body: "AI가 모든 과정을 분담하여 자동으로 처리하는 시스템을 플럭스랩스의 AUI 기술로 구현됩니다.",
+    image: "/business/card-nxi.png",
+  },
+  {
+    slug: "wearable",
+    title: "웨어러블 온디바이스",
+    body: "Smart Glasses",
+    halves: ["/business/card-wearable-l.png", "/business/card-wearable-r.png"],
+  },
+  {
+    slug: "healthcare",
+    title: "접수·수납 창구에서 줄이 사라지는 방식",
+    body: "플럭스랩스는 이 영역을 AI 에이전트 기반으로 자동화하는 SI 프로젝트를 수행합니다",
+    image: "/business/card-healthcare-v3.png",
+  },
+  {
+    slug: "assistant",
+    title: "AI 어시스턴트 서비스",
+    body: "이미 사용하고 있는 시스템에 에이전트를 결합합니다",
+    image: "/business/card-assistant-v4.png",
+  },
+];
 
 function BusinessGrid() {
   return (
@@ -271,8 +226,160 @@ function BusinessGrid() {
       </Container>
 
       <Container>
-        <div className="mt-14 overflow-hidden rounded-2xl">
-          <ExpandPanels items={BUSINESS_PANELS} />
+        <div className="mx-auto mt-14 grid max-w-5xl gap-5 md:grid-cols-2 md:gap-6">
+          {BUSINESS_CARDS.map((card, index) => (
+            <Reveal key={card.slug} delay={index * 80}>
+              <Link href={`/business/${card.slug}`} className="group block">
+                {/*
+                  호버 광은 box-shadow 다. 상자 테두리만 따라 그려지므로
+                  카드 바깥 윤곽만 빛난다.
+
+                  ⚠️ drop-shadow 를 쓰면 안 된다 — 그건 불투명한 모든 요소를
+                     따라가서, 안이 비어 있는 사진(의료)에서는 안쪽 아이콘과
+                     선들이 하나씩 빛나 버린다.
+
+                  상자는 사진과 같은 비율(26px = 가로 4.82% · 세로 7.03%)로
+                  굴린다. 광이 흐릿해서 곡선 종류가 조금 달라도 티가 나지 않는다.
+
+                  사진에 테두리와 둥근 모서리가 그려져 있으므로 카드 쪽에서는
+                  테두리도 클리핑도 주지 않는다. 자르면 그 테두리가 깎인다.
+                */}
+                <div className="relative aspect-[539/370]">
+                  {/*
+                    호버 광 — 사진의 투명도를 마스크로 써서 파란색을 그 모양대로
+                    찍고 흐린다. 모양이 사진과 100% 같으므로 모서리가 어긋날 수 없다.
+
+                    ⚠️ box-shadow / border-radius 로는 안 된다. 사진의 모서리가
+                       원호가 아니라 완만한 곡선(squircle)이라 CSS 로 재현되지
+                       않는다 (y=15 에서 사진 x=5, 반지름 26 원이면 2.4).
+                    ⚠️ drop-shadow 도 안 된다. 불투명한 모든 요소를 따라가서,
+                       안이 비어 있는 사진에서는 내부 아이콘까지 빛난다.
+                  */}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 opacity-0 blur-[10px] transition-opacity duration-500 group-hover:opacity-85"
+                  >
+                    {(card.halves ?? [card.image]).map((src, i) => (
+                      <span
+                        key={src}
+                        className={`absolute inset-y-0 bg-[#4a92e5] ${
+                          card.halves
+                            ? i === 0
+                              ? "left-0 right-1/2 mr-[3px]"
+                              : "left-1/2 right-0 ml-[3px]"
+                            : "inset-x-0"
+                        }`}
+                        style={{
+                          WebkitMaskImage: `url(${src})`,
+                          maskImage: `url(${src})`,
+                          WebkitMaskSize: "100% 100%",
+                          maskSize: "100% 100%",
+                          WebkitMaskRepeat: "no-repeat",
+                          maskRepeat: "no-repeat",
+                        }}
+                      />
+                    ))}
+                  </span>
+
+                  {card.halves ? (
+                    <div className="flex h-full w-full gap-1.5">
+                      {card.halves.map((half) => (
+                        <span key={half} className="relative block h-full flex-1">
+                          <Image
+                            src={half}
+                            alt=""
+                            fill
+                            sizes="(min-width: 1024px) 280px, 25vw"
+                            className="object-fill"
+                          />
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <Image
+                      src={card.image}
+                      alt=""
+                      fill
+                      sizes="(min-width: 1024px) 560px, 50vw"
+                      className="relative object-fill"
+                    />
+                  )}
+
+                  {/* 글자는 사진 위 왼쪽 아래. 네 칸이 같은 자리·같은 크기를 쓴다 */}
+                  <div className="absolute inset-x-5 bottom-5 z-10 md:inset-x-7 md:bottom-7">
+                    <h3 className="text-lg font-bold leading-snug">{card.title}</h3>
+                    <p className="mt-1.5 max-w-md text-sm leading-relaxed text-navy-100 md:text-base">
+                      {card.body}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+/* --------------------------------------------------- S3-2 프로세스 스텝 (새 4분할 섹터) */
+
+function ProcessSteps() {
+  return (
+    <section className="relative overflow-hidden bg-ink-950 py-16 text-white md:py-40" id="process-steps">
+      <Container>
+        <PillHeading
+          eyebrow="Approach"
+          description="한 현장에서 검증된 방식이 다음 현장의 출발점이 됩니다."
+          descriptionClassName="text-[26px] font-medium text-white"
+        />
+        {/* max-w-6xl을 사용하여 위의 3번 섹터(BusinessGrid)와 좌우 너비를 정확히 맞춥니다 */}
+        {/* 유리에 비칠 빛 — 이게 없으면 카드 윗부분이 빈칸으로 보인다 */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-1/3 h-[520px] bg-[radial-gradient(60%_50%_at_50%_50%,rgba(74,146,229,0.22)_0%,rgba(30,58,138,0.1)_45%,transparent_75%)]"
+        />
+
+        <div className="relative mx-auto mt-16 grid max-w-6xl gap-8 md:grid-cols-2 lg:gap-6 lg:grid-cols-4">
+          {TECH_AXES.map((axis, index) => (
+            <div key={axis.key} className="group relative flex w-full min-h-[380px] flex-col px-6 pb-20 pt-16 text-center">
+              
+              {/* === BACKGROUND AND BORDER LAYER === */}
+              <div className="absolute inset-0 z-0 drop-shadow-[0_0_8px_rgba(74,146,229,0.2)] transition-all duration-500 group-hover:drop-shadow-[0_0_30px_rgba(74,146,229,0.5)]">
+                
+                {/* 1. 메인 카드 (밑이 잘리지 않은 완전한 둥근 사각형) */}
+                <div className="absolute inset-0 step-card-surface rounded-[28px] border border-slate-600">
+                  <div className="absolute inset-x-12 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#4A92E5] to-transparent blur-[2px]" />
+                </div>
+                
+                {/*
+                {/*
+                  2. 테두리 지우개 — 카드 바닥의 직선 테두리 중 아치가 열리는
+                  78px 구간만 덮는다. 아치 안쪽과 같은 색이어야 두 조각이
+                  한 덩어리로 읽힌다.
+                */}
+                <div className="absolute bottom-0 left-1/2 h-[2px] w-[78px] -translate-x-1/2 bg-ink-950 z-10" />
+
+                {/* 3. 상단 아치 — 카드에서 파낸 자리. 구슬이 여기 앉는다 */}
+                <div className="absolute bottom-0 left-1/2 h-10 w-20 -translate-x-1/2 rounded-t-[40px] border-x border-t border-slate-600 bg-ink-950 z-20" />
+
+                {/* 4. 이너 구슬 (구슬 하단은 테두리 없이 자연스럽게 노출) */}
+                <div className="absolute -bottom-8 left-1/2 flex size-16 -translate-x-1/2 items-center justify-center rounded-full bg-[radial-gradient(circle_at_42%_28%,_#ffffff_0%,_#cfe3ff_16%,_#6aa4f5_42%,_#2a54b8_70%,_#16265f_100%)] text-lg font-bold text-white shadow-[inset_0_0_12px_rgba(56,189,248,0.5)] z-30">
+                  0{index + 1}
+                </div>
+
+              </div>
+
+              {/* === CONTENT LAYER === */}
+              <div className="relative z-10 flex h-full w-full flex-col items-center">
+                <Image src={`/tech/icon-v2-${index + 1}.png`} alt={axis.label} width={56} height={56} className="mb-8 object-contain" />
+                <h3 className="mb-5 text-xl font-bold text-sky-100">{axis.label}</h3>
+                <p className="text-[13px] leading-relaxed text-sky-200/70 md:text-[14px]">
+                  {axis.description}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </Container>
     </section>
@@ -283,89 +390,65 @@ function BusinessGrid() {
 
 /* -------------------------------------------------------- S4-1 IMPACT */
 
-const IMPACT_VALUES = [
-  {
-    key: "zero-learning" as const,
-    title: "Zero Learning Curve",
-    description: "별도의 교육이나 설치 없이 즉시 현장 투입 가능",
-  },
-  {
-    key: "scalability" as const,
-    title: "Infinite Scalability",
-    description: "한 지점의 학습 데이터가 전체 지점의 지능으로 즉각 업데이트",
-  },
-  {
-    key: "human-centric" as const,
-    title: "Human-centric",
-    description: "단순 반복 업무는 AI에게, 사람은 더 가치 있는 업무에 집중",
-  },
+
+/** 아래 칩 — 사진의 화살표가 가리키는 네 사업 */
+const AGENT_GOAL_TAGS = [
+  "AUI 리테일",
+  "의료기관 자동화",
+  "웨어러블 에이전트",
+  "AI 어시스턴트",
 ];
 
-function ImpactSection() {
+/**
+ * 접근 방식 아래 키비주얼.
+ *
+ * 사진에는 원호·로고·화살표만 있고, 워드마크·문구·칩은 HTML 로 얹는다.
+ * 글자를 사진에 굽지 않는 이유 — 그러면 번역도 검색도 안 되고, 문구를 고칠
+ * 때마다 사진을 다시 받아야 한다.
+ *
+ * 글자 위치는 % 로 잡는다. 사진이 원본 비율(2880x1358)대로 늘어나므로,
+ * 화면 폭이 달라져도 글자가 사진 속 빈 자리에 그대로 앉는다.
+ */
+function AgentGoalVisual() {
   return (
-    <section
-      className="on-navy bg-ink-950 py-16 text-white md:py-40"
-      id="impact"
-    >
-      <Container>
-        <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-12">
-          <div>
-            <Reveal>
-              <div className="lg:-translate-y-10">
-                <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold tracking-wide text-white/70">
-                  Impact
-                </span>
-                <h2 className="mt-6 text-3xl leading-[1.3] font-bold md:text-4xl lg:text-[42px]">
-                  단순한 자동화를 넘어
-                  <br />
-                  24시간 멈추지 않는
-                  <br />
-                  현장 파트너.
-                </h2>
-              </div>
-            </Reveal>
+    <section className="bg-ink-950 pt-16 md:pt-40">
+      <Reveal>
+        <div className="relative">
+          <Image
+            src="/company/hero-13.jpg"
+            alt=""
+            width={2880}
+            height={1358}
+            quality={92}
+            sizes="100vw"
+            className="h-auto w-full"
+          />
 
-            <div className="mt-10 flex flex-col gap-9">
-              {IMPACT_VALUES.map((value, index) => (
-                <Reveal key={value.key} delay={index * 100}>
-                  <div className="flex items-start gap-4">
-                    <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white">
-                      <ImpactIcon icon={value.key} className="size-6" />
-                    </span>
-                    <div>
-                      <h3 className="text-base font-bold tracking-wide">
-                        {value.title}
-                      </h3>
-                      <p className="mt-1 leading-[1.7] text-navy-300">
-                        {value.description}
-                      </p>
-                    </div>
-                  </div>
-                </Reveal>
+          {/* 발광 덩어리 바로 아래에 글자를 앉힌다 */}
+          <div className="absolute inset-x-0 top-[43%] px-5 text-center">
+            <p className="mt-4 text-xl leading-none font-bold tracking-tight text-white md:mt-6 md:text-3xl lg:text-4xl">
+              FLUXLABS
+            </p>
+
+            <p className="mx-auto mt-6 max-w-2xl text-xs leading-[2.2] font-semibold break-keep whitespace-pre-line text-white/85 md:mt-9 md:text-base">
+              {`"사람을 이해하는 소프트웨어,
+당신의 의도를 읽고 스스로 판단하여 최적의 결과를 완성합니다."`}
+            </p>
+
+            <ul className="mt-6 flex flex-wrap items-center justify-center gap-1.5 md:mt-10 md:gap-2.5">
+              {AGENT_GOAL_TAGS.map((tag) => (
+                <li
+                  key={tag}
+                  className="rounded-full bg-[#1817b1] px-2.5 py-1 text-[0.65rem] font-bold text-white shadow-[0_0_16px_rgba(45,43,220,0.7)] md:px-4 md:py-1.5 md:text-sm"
+                >
+                  {tag}
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
-
-          {/* 배경과 이어지도록 가장자리를 방사형으로 페이드아웃한다 (박스 경계 없음) */}
-          <Reveal delay={120}>
-            <div className="relative mx-auto aspect-square w-full max-w-xl lg:aspect-[4/5]">
-              <Image
-                src="/impact/beam.png"
-                alt="중심으로 모여드는 빛줄기"
-                fill
-                sizes="(max-width: 1023px) 100vw, 40vw"
-                className="object-contain"
-                style={{
-                  WebkitMaskImage:
-                    "radial-gradient(closest-side, black 55%, transparent 100%)",
-                  maskImage:
-                    "radial-gradient(closest-side, black 55%, transparent 100%)",
-                }}
-              />
-            </div>
-          </Reveal>
         </div>
-      </Container>
+
+      </Reveal>
     </section>
   );
 }
@@ -379,7 +462,7 @@ const LOGO_WALL = Array.from({ length: 8 }, (_, i) => ({
 
 function PartnersSection() {
   return (
-    <section className="bg-ink-950 py-8 text-white md:py-10" id="partners">
+    <section className="bg-ink-950 pt-10 pb-8 text-white md:pt-20 md:pb-10" id="partners">
       {/* 로고 띠 위에 얹는 작은 라벨 — 헤드라인이 아니라 스트립의 이름표다 */}
       <Container>
         <Reveal>
