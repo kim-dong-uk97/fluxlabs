@@ -377,10 +377,11 @@
   will-change: transform;
 }
 
-/* 읽고 싶은 로고에 마우스를 올리면 멈춘다 */
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
-}
+/*
+  마우스를 올려도 멈추지 않는다. 로고를 클릭하거나 읽을 대상이 아니라
+  배경처럼 흘러가는 띠라, 커서가 지나갈 때마다 멈추면 오히려 눈에 띈다.
+  (멈춤이 필요해지면 .marquee:hover 에 animation-play-state: paused 를 준다)
+*/
 
 @keyframes marquee-scroll {
   from {

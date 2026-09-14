@@ -114,11 +114,25 @@ export function Header() {
         본문으로 건너뛰기
       </a>
 
+      {/*
+        헤더 뒤에 깔리는 검정 — 맨 위에서 아래로 옅어진다. 히어로 사진의
+        밝은 부분에 메뉴가 묻히는 것을 막는다. 헤더보다 아래(z-40)에 두어
+        메뉴 클릭을 막지 않는다.
+
+        중간 정지점을 네 군데 찍는다. 두 색 사이를 그냥 이으면 어두운 구간에서
+        색 단계가 부족해 띠(밴딩)가 보인다 — 정지점을 촘촘히 두면 그 계단이
+        분산돼 눈에 띄지 않는다.
+      */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-x-0 top-0 z-40 h-48 bg-[linear-gradient(to_bottom,rgba(10,11,15,0.95)_0%,rgba(10,11,15,0.88)_28%,rgba(10,11,15,0.6)_55%,rgba(10,11,15,0.25)_78%,transparent_100%)]"
+      />
+
       <header
         className={`on-navy fixed inset-x-0 top-0 z-50 transition-[height,background-color,box-shadow] duration-300 ${
           transparent
-            ? "h-20 bg-transparent"
-            : "h-16 bg-white/15 shadow-[0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm"
+            ? "h-16 bg-transparent"
+            : "h-14 bg-ink-950/70 shadow-[0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md"
         }`}
       >
         <div className="mx-auto flex h-full max-w-[1600px] items-center px-5 md:px-10 lg:px-20">
@@ -145,12 +159,15 @@ export function Header() {
 
           {/* ---- PC 내비게이션 (가운데 정렬, 하나의 투명 칩으로 묶는다) ---- */}
           {/*
-            칩 안쪽 여백을 상하좌우 2px(p-0.5)로 통일한다.
-            항목의 hover 배경이 칩 테두리와 같은 중심의 라운드로 딱 맞게
-            들어앉도록 항목 반경은 14px(= 칩 16px − 여백 2px)로 맞춘다.
+            칩 안쪽 여백은 상하좌우 3px 로 같아야 한다. 좌우만 벌리면 hover
+            배경이 위아래로는 테두리에 붙고 좌우로는 떠서 어긋나 보인다.
+
+            항목 반경은 13px = 칩 16px 빼기 여백 3px. 이 관계가 맞아야
+            hover 배경과 칩 테두리가 같은 중심의 라운드가 된다. 한쪽을
+            바꾸면 다른 쪽도 같이 고칠 것.
           */}
           <nav
-            className="hidden items-center gap-0.5 rounded-2xl border border-white/15 bg-white/5 p-0.5 lg:flex"
+            className="hidden items-center gap-0.5 rounded-2xl border border-white/15 bg-ink-950/55 p-[3px] backdrop-blur-sm lg:flex"
             aria-label="주요 메뉴"
           >
             {nav.map((item) =>
@@ -160,7 +177,7 @@ export function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-[14px] px-4 py-1.5 text-[0.95rem] font-medium text-white transition-colors hover:bg-white/10"
+                  className="rounded-[13px] px-4 py-1.5 text-[0.95rem] font-medium text-white transition-colors hover:bg-white/10"
                 >
                   {item.label}
                 </Link>
@@ -182,7 +199,7 @@ export function Header() {
               번역이 있는 라우트(홈·사업영역)에서는 같은 페이지의 다른 언어판으로
               이동하고, 나머지 페이지에서는 비활성 상태로 남겨둔다.
             */}
-            <div className="ml-2 flex items-center gap-1 rounded-full border border-white/15 px-3 py-1.5 text-[0.8rem] font-medium">
+            <div className="ml-2 flex items-center gap-1 rounded-full border border-white/15 bg-ink-950/55 px-3 py-1.5 text-[0.8rem] font-medium backdrop-blur-sm">
               {translation ? (
                 <Link
                   href={translation.ko}
@@ -294,7 +311,7 @@ function DesktopDropdown({
         onKeyDown={(event) => {
           if (event.key === "Escape") setOpen(false);
         }}
-        className="inline-flex items-center gap-1 rounded-[14px] px-4 py-1.5 text-[0.95rem] font-medium text-white transition-colors hover:bg-white/10"
+        className="inline-flex items-center gap-1 rounded-[13px] px-4 py-1.5 text-[0.95rem] font-medium text-white transition-colors hover:bg-white/10"
       >
         {item.label}
         <span aria-hidden="true" className="text-[0.7em]">

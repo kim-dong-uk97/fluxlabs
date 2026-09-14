@@ -39,10 +39,50 @@ export default function HomePageEn() {
   return (
     <>
       <Hero />
-      <CompanyDefinition />
-      <BusinessGrid />
-      <ProcessSteps />
-      <AgentGoalVisual />
+      {/*
+        2번부터 키비주얼까지 배경을 공유한다. 섹터마다 따로 깔면
+        경계마다 색이 끊겨 여러 덩어리로 읽히는데, 하나로 깔면 스크롤이 한
+        흐름으로 이어진다.
+
+        ⚠️ 안쪽 섹터들은 배경색을 갖지 않는다. 하나라도 칠하면 그 구간에서
+           이 배경이 가려진다.
+      */}
+      <div className="relative isolate overflow-hidden bg-ink-950">
+        <Image
+          src="/company/section-bg.jpg"
+          alt=""
+          fill
+          quality={88}
+          sizes="100vw"
+          className="pointer-events-none -z-10 object-cover"
+        />
+        {/*
+          가독성 스크림 — 사진 평균 밝기가 39/255 로 낮지만 밝은 결이 지나가는
+          자리에 흰 글씨가 놓인다. 섹션 배경색과 같은 색으로 고르게 눌러
+          위아래 섹션과 이음매가 보이지 않게 한다.
+        */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 bg-ink-950/55"
+        />
+        {/*
+          배경 사진의 위·아래 끝 — 사진이 여기서 뚝 끊기면 가로선 하나가 그대로
+          보인다. 양 끝을 섹션 바탕색으로 흘려보내 선이 아니라 그늘로 읽히게 한다.
+          위는 히어로, 아래는 로고 띠와 맞닿는 자리다.
+        */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-ink-950 to-transparent md:h-64"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-ink-950 to-transparent md:h-64"
+        />
+        <CompanyDefinition />
+        <BusinessGrid />
+        <ProcessSteps />
+        <AgentGoalVisual />
+      </div>
       <PartnersSection />
       <CtaBanner />
     </>
@@ -58,18 +98,17 @@ function Hero() {
       aria-labelledby="hero-heading"
     >
       {/*
-        배경 — 사진 비율(1.415)이 화면보다 세로로 길어 위아래가 잘린다.
-        기본값(가운데)으로 두면 위아래를 반씩 잘라 위쪽 지평선 빛이 깎이므로,
-        기준점을 25% 로 올려 잘림을 아래쪽 빈 공간에 몰아준다.
+        배경 — 구까지 들어 있는 한 장. 기준점 44% 는 사진 속 구의 세로 위치라,
+        화면이 넓어 위아래가 잘릴 때도 구가 화면 한가운데 남는다.
       */}
       <Image
-        src="/company/hero-orb-v8.png"
+        src="/company/hero-v12.png"
         alt=""
         fill
         priority
         quality={95}
         sizes="100vw"
-        className="pointer-events-none object-cover object-[center_25%]"
+        className="pointer-events-none object-cover object-[center_44%]"
       />
       {/*
         스크림은 두지 않는다. 글자가 앉는 자리의 원본 밝기가 17~21/255 라
@@ -77,56 +116,75 @@ function Hero() {
         남은 색까지 눌려서 사진이 죽는다.
       */}
 
-      <Container className="relative py-24 md:py-32">
-        {/*
-          제목은 사진 속 구를 사이에 두고 짧은 두 단어로 갈린다. 가운데 칸은
-          글자를 넣지 않고 자리만 비워 구가 그대로 드러나게 한다.
+      {/*
+        위·아래 여백을 다르게 준다. 글 덩어리는 섹션 한가운데에 놓이는데
+        제목 줄은 그 덩어리의 맨 위라, 그대로 두면 사진 속 구(세로 44%)보다
+        위로 올라간다. 위를 더 비워 제목 줄을 구 높이까지 내린다.
+        vh 로 잡아야 화면 높이가 달라져도 같은 비율로 따라간다.
+      */}
+      <Container className="relative py-24 md:pt-[calc(8rem_+_6vh)] md:pb-[calc(8rem_-_6vh)]">
+        <div className="relative">
+          <Reveal>
+            <h1
+              id="hero-heading"
+              className="grid gap-3 text-[2rem] leading-none font-bold tracking-tight md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-x-10 md:gap-y-0 md:text-[2.5rem] lg:gap-x-16 lg:text-[3.25rem]"
+            >
+              {/*
+                단어·빛줄·설명 두 줄이 모두 같은 왼쪽 끝을 쓴다.
 
-          ⚠️ 가운데 빈 칸 폭(md:w-[40vw] lg:w-[38vw])은 사진 속 구 지름보다 넉넉해야 한다.
-             좁으면 글자가 구를 밟는다. 사진을 갈아끼우면 이 값도 같이 볼 것.
+                ⚠️ 단어와 설명은 구에 닿는 오른쪽 끝을 맞춘다. 셋(단어·빛줄·설명)의
+                   폭이 달라 한쪽 끝만 맞출 수 있는데, 구를 사이에 둔 구도라
+                   구 쪽 끝을 맞춰야 좌우 간격이 같아진다.
+                   왼쪽 끝까지 맞추려면 칸을 단어 폭(12rem)으로 좁혀야 하고,
+                   그러면 설명이 세 줄로 접힌다.
+                   빛줄은 단어를 감싼 inline-block 안에 있어 단어 폭만큼만 긋는다.
+              */}
+              <span className="block md:justify-self-end md:text-right">
+                <span className="inline-block whitespace-nowrap">
+                  We change
+                  <span
+                    aria-hidden="true"
+                    className="mt-3 block h-[3px] w-full bg-gradient-to-r from-transparent via-[#4a92e5] to-[#bcd9ff] md:mt-4"
+                  />
+                </span>
+              </span>
+              {/* 사진 속 구가 앉을 자리 — 폭만 비운다 */}
+              <span aria-hidden="true" className="hidden md:w-[24vh] lg:w-[26vh] md:block" />
+              <span className="md:justify-self-start md:text-left">how work is done</span>
+            </h1>
+          </Reveal>
 
-          설명 줄이 제목 아래 정확히 붙도록, 아래 grid 도 같은 3칸 구성을 쓴다.
-        */}
-        <Reveal>
-          <h1
-            id="hero-heading"
-            className="grid gap-3 text-4xl leading-none font-bold tracking-tight md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-0 md:text-5xl lg:text-6xl"
-          >
-            <span className="md:justify-self-end md:text-right">
-              We
-              {/* 단어 아래 얇은 빛줄 — 왼쪽 단어에만 붙는다 */}
-              <span
-                aria-hidden="true"
-                className="mt-3 block h-[3px] w-full bg-gradient-to-r from-transparent via-[#4a92e5] to-[#bcd9ff] md:mt-4"
-              />
-            </span>
-            <span aria-hidden="true" className="hidden md:block md:w-[40vw] lg:w-[38vw]" />
-            <span className="md:justify-self-start md:text-left">shift it</span>
-          </h1>
-        </Reveal>
-
-        {/* 설명 — 왼쪽 단어 바로 아래. 제목과 같은 3칸이라 세로선이 맞는다 */}
-        <Reveal delay={120}>
-          <div className="grid md:grid-cols-[1fr_auto_1fr]">
-            <p className="mt-6 text-sm leading-[1.7] whitespace-pre-line text-navy-100 md:mt-8 md:justify-self-end md:text-left">
-              {`FLUXLABS redesigns on-site operations across
+          <Reveal delay={120}>
+            <div className="grid md:grid-cols-[1fr_auto_1fr] md:gap-x-10 lg:gap-x-16">
+              {/* 설명 두 줄 — 위 단어와 같은 폭·같은 왼쪽 끝. 줄바꿈 자리는 직접 정한다 */}
+              <p className="mt-3 text-sm leading-[1.7] break-keep whitespace-pre-line text-navy-100 md:mt-4 md:w-fit md:justify-self-end md:text-left">
+                {`FLUXLABS redesigns on-site operations across
 retail, healthcare and wearables with AI agents.`}
-            </p>
-            <span aria-hidden="true" className="hidden md:block md:w-[40vw] lg:w-[38vw]" />
-            <span aria-hidden="true" className="hidden md:block" />
-          </div>
-        </Reveal>
+              </p>
+              <span aria-hidden="true" className="hidden md:w-[24vh] lg:w-[26vh] md:block" />
+              <span aria-hidden="true" className="hidden md:block" />
+            </div>
+          </Reveal>
+        </div>
 
         {/* 버튼 — 구 아래 가운데 */}
         <Reveal delay={240}>
-          <div className="mt-16 flex justify-center md:mt-24">
+          <div className="mt-24 flex flex-wrap items-center justify-center gap-4 md:mt-40 md:gap-8">
             <ButtonLink
-              href="/en#business"
+              href="/en/business"
               tone="dark"
               variant="primary"
-              className="!rounded-full !border !border-white/15 !bg-[#0a0b0f] !text-white transition-colors hover:!bg-[#16181f]"
+              className="!rounded-full !border-2 !border-white/30 !bg-gradient-to-b !from-[#22242c] !via-[#111318] !to-[#050609] !text-white transition-[filter] hover:!brightness-125"
             >
               Explore Services <Arrow />
+            </ButtonLink>
+            <ButtonLink
+              href="/contact"
+              tone="dark"
+              variant="primary"
+              className="!rounded-full !border-2 !border-white/30 !bg-gradient-to-b !from-[#22242c] !via-[#111318] !to-[#050609] !text-white transition-[filter] hover:!brightness-125"
+            >
+              Talk to Us <Arrow />
             </ButtonLink>
           </div>
         </Reveal>
@@ -138,6 +196,16 @@ retail, healthcare and wearables with AI agents.`}
       >
         <span className="animate-bounce">↓ scroll</span>
       </div>
+
+      {/*
+        아래 섹터로 넘어가는 이음매 — 히어로 사진 밑단을 다음 섹션 바탕색으로
+        서서히 덮는다. 색이 같아야 경계선이 아니라 그늘로 읽힌다.
+        글자 위(z-10)가 아니라 사진 위에만 얹히므로 본문을 가리지 않는다.
+      */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent via-ink-950/55 to-ink-950 md:h-56"
+      />
     </section>
   );
 }
@@ -146,7 +214,8 @@ retail, healthcare and wearables with AI agents.`}
 
 function CompanyDefinition() {
   return (
-    <Section tone="white" size="lg" className="!py-16 bg-[#0c0c0e] md:!py-40">
+    <section className="on-navy relative py-16 text-paper md:py-40">
+      <Container>
       <div className="mx-auto grid max-w-6xl gap-14 md:grid-cols-2 md:gap-24">
         {/* 왼쪽 텍스트 영역 */}
         <div className="flex flex-col">
@@ -203,7 +272,8 @@ function CompanyDefinition() {
           />
         </Reveal>
       </div>
-    </Section>
+      </Container>
+    </section>
   );
 }
 
@@ -237,14 +307,14 @@ const BUSINESS_CARDS = [
     slug: "assistant",
     title: "AI Assistant Service",
     body: "We bring agents into the systems you already use",
-    image: "/business/card-assistant-v4.png",
+    image: "/business/card-assistant-v5.png",
   },
 ];
 
 function BusinessGrid() {
   return (
     <section
-      className="on-navy bg-ink-950 py-16 text-white md:py-40"
+      className="on-navy relative pt-16 pb-0 text-white md:pt-40 md:pb-0"
       id="business"
     >
       <Container>
@@ -351,7 +421,7 @@ function BusinessGrid() {
 function ProcessSteps() {
   return (
     <section
-      className="relative overflow-hidden bg-ink-950 py-16 text-white md:py-40"
+      className="relative overflow-hidden pt-0 pb-16 text-white md:pt-0 md:pb-40"
       id="process-steps"
     >
       <Container>
@@ -366,7 +436,7 @@ function ProcessSteps() {
           className="pointer-events-none absolute inset-x-0 top-1/3 h-[520px] bg-[radial-gradient(60%_50%_at_50%_50%,rgba(74,146,229,0.22)_0%,rgba(30,58,138,0.1)_45%,transparent_75%)]"
         />
 
-        <div className="relative mx-auto mt-16 grid max-w-6xl gap-8 md:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+        <div className="relative mx-auto mt-10 grid max-w-6xl gap-8 md:grid-cols-2 lg:grid-cols-4 lg:gap-6">
           {TECH_AXES_EN.map((axis, index) => (
             <div
               key={axis.key}
@@ -440,9 +510,14 @@ const AGENT_GOAL_TAGS = [
  */
 function AgentGoalVisual() {
   return (
-    <section className="bg-ink-950 pt-16 md:pt-40">
+    <section className="relative pt-16 md:pt-40">
       <Reveal>
         <div className="relative">
+          {/*
+            사진 위·아래를 마스크로 투명하게 지운다. 검정으로 덮으면 안 된다 —
+            뒤에 깔린 공유 배경(파란 사진)과 색이 달라 오히려 가로선이 생긴다.
+            투명하게 지워야 뒷배경이 그대로 비쳐 이음매가 사라진다.
+          */}
           <Image
             src="/company/hero-13.jpg"
             alt=""
@@ -450,7 +525,7 @@ function AgentGoalVisual() {
             height={1358}
             quality={92}
             sizes="100vw"
-            className="h-auto w-full"
+            className="h-auto w-full [mask-image:linear-gradient(to_bottom,transparent_0%,black_14%,black_86%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_14%,black_86%,transparent_100%)]"
           />
 
           {/* 발광 덩어리 바로 아래에 글자를 앉힌다 */}
@@ -493,7 +568,7 @@ const LOGO_WALL = Array.from({ length: 8 }, (_, i) => ({
 function PartnersSection() {
   return (
     <section
-      className="bg-ink-950 pt-10 pb-8 text-white md:pt-20 md:pb-10"
+      className="bg-ink-950 pt-4 pb-8 text-white md:pt-8 md:pb-10"
       id="partners"
     >
       {/* 로고 띠 위에 얹는 작은 라벨 — 헤드라인이 아니라 스트립의 이름표다 */}
@@ -571,7 +646,11 @@ const CTA_CARDS = [
 
 function CtaBanner() {
   return (
-    <Section tone="navy-deep" size="lg" className="!py-16 md:!py-40">
+    <Section
+      tone="navy-deep"
+      size="lg"
+      className="relative overflow-hidden !pt-6 !pb-16 md:!pt-10 md:!pb-40"
+    >
       <div className="grid gap-8 lg:grid-cols-2">
         {CTA_CARDS.map((card, index) => (
           <Reveal key={card.key} delay={index * 120}>
